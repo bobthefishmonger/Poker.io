@@ -1,0 +1,9 @@
+body{
+    background-color: var(--BodyColour)
+}
+
+
+
+html{
+    --BodyColour: rgb(33,33,33);
+}
