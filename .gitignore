@@ -2,5 +2,4 @@
 /server/database/accounts.db
 /package-lock.json
 /package.json
-/server/dbmanager.js
-/dbcommands.txt
+/.env

@@ -4,11 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
-    <link rel="icon" href="../assets/favicon.png">
-    <link rel="stylesheet" href="css/app.css">
-    <link rel="stylesheet" href="css/signup.css">
+    <link rel="icon" href="../../assets/favicon.png">
+    <link rel="stylesheet" href="../../css/app.css">
+    <link rel="stylesheet" href="../../css/signup.css">
 </head>
 <body>
     <p>This is a signup page</p>
+    <form id="signupform">
+        <input type="text" id="username_input" class="username_input" placeholder="Username">
+        <input type="password" id="password_input" class="password_input" placeholder="Password">
+        <input type="checkbox" id="stayloggedin_input" class="stayloggedin_input">
+        <button type="submit" class="formsubmitbtn">Submit</button>
+        <p id="errormsg" class="errormsg"></p>
+    </form>
+    <p>Note: On signing up, you agree to IPs used to access your account will be stored, for your security</p>
 </body>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket = io();
+</script>
+<script src="../../js/app.js"></script>
+<script src="../../js/signup.js"></script>
 </html>
