@@ -8,12 +8,30 @@ router.get("/", async(req,res) =>{
     sendhtml(res, "gamelist");
 });
 router.get("/poker", async(req,res) =>{
-    sendhtml(res, "poker");
+    if (!req.session.AccountInfo.LoggedIn){
+        req.session.redirectNote = "You cannot access Poker whilst not logged in"
+        res.redirect("/account/login");
+    }else{
+        req.session.redirect = req.query.redirect || "/";
+        sendhtml(res, "poker");
+    }
 });
 router.get("/blackjack", async(req,res) =>{
-    sendhtml(res, "blackjack");
+    if (!req.session.AccountInfo.LoggedIn){
+        req.session.redirectNote = "You cannot access Blackjack whilst not logged in"
+        res.redirect("/account/login");
+    }else{
+        req.session.redirect = req.query.redirect || "/";
+        sendhtml(res, "blackjack");
+    }
 });
 router.get("/roulette", async(req,res) =>{
-    sendhtml(res, "roulette");
+    if (!req.session.AccountInfo.LoggedIn){
+        req.session.redirectNote = "You cannot access Roulette whilst not logged in"
+        res.redirect("/account/login");
+    }else{
+        req.session.redirect = req.query.redirect || "/";
+        sendhtml(res, "roulette");
+    }
 });
 module.exports = router

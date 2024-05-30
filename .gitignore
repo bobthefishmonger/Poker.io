@@ -1,4 +1,5 @@
 /node_modules
+/server/database/uploads
 /server/database/accounts.db
 /package-lock.json
 /package.json

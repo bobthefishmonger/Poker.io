@@ -1,9 +1,30 @@
 const db = require("./dbmanager.js");
 const argon2 = require("argon2");
 const cookies = require("./cookies.js");
-const { CONSTRAINT } = require("sqlite3");
 
-async function writeSignUp(SessionInfo, Username, Password, IP, Stayloggedin, Theme = "Dark", ImagePath = "/database/uploads/default.png"){
+function check_password(password){
+        const chars = Array.from(password);
+        if (!password){
+            throw Error("Password cannot be empty");
+        }
+        else if (password.length < 8){
+            throw Error("Password must be at least 8 letters");
+        }
+        else if (!chars.some(char => /[A-Z]/.test(char))){
+            throw Error("Password must contain at least 1 uppercase character");
+        }
+        else if (!chars.some(char => /[a-z]/.test(char))){
+            throw Error("Password must contain at least 1 lowercase character");
+        }
+        else if (!chars.some(char => !isNaN(char) && char !== ' ')){
+            throw Error("Password must contain at least 1 number");
+        }
+        else if (!chars.some(char => /[!@#$%^&*(),.?":{}|<>]/.test(char))){
+            throw Error("Password must contain at least 1 special character");
+        }
+}
+
+async function writeSignUp(SessionInfo, Username, Password, IP, Stayloggedin, Theme, ImagePath){
     return new Promise(async (resolve, reject) => {
         try{
             if (await db.usernameinuse(Username)){
@@ -23,6 +44,10 @@ async function writeSignUp(SessionInfo, Username, Password, IP, Stayloggedin, Th
 
 async function signUpUser(req,sessionInfo, username, password, ip, stayLoggedIn, theme, imagePath) {
     try {
+        if (!username){
+            throw Error("Username cannot be empty");
+        }
+        check_password(password);
         const accountID = await writeSignUp(sessionInfo, username, password, ip, stayLoggedIn, theme, imagePath);
         const accountinfo = {
             LoggedIn: true,
@@ -40,7 +65,6 @@ async function signUpUser(req,sessionInfo, username, password, ip, stayLoggedIn,
         }
         req.session.AccountInfo = accountinfo;
     } catch (error) {
-        console.error("Error during sign up:", error);
         throw error;
     }
 }
@@ -111,6 +135,7 @@ async function logInAuto(req, res){
         }
     }
 }
+
 
 module.exports = {
     signUpUser,

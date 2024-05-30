@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const db = require("./dbmanager.js");
 require("dotenv").config();
+
 //Util functions
 function createCookieExpiry(days) {
     var creationDate = new Date();
@@ -25,6 +26,7 @@ function decrypt(text) {
     decrypted = Buffer.concat([decrypted, decipher.final()]);
     return decrypted.toString();
 }
+
 //SessionInfo cookie
 function createSessionInfoCookieData(days){
     let data  = {
@@ -82,21 +84,24 @@ async function validateSessionInfocookie(req, res){
     return [SessionInfo, ShouldLogIn]
 }
 
-module.exports = {
-    validateSessionInfocookie
+function createDisplayInformationCookie(req, res){
+    let DisplayInformation
+    try{
+        DisplayInformation = {
+            theme: req.session.AccountInfo.Visuals.Theme,
+            profileIcon: req.session.AccountInfo.Visuals.AccountImage,
+            Earnings: req.session.AccountInfo.Earnings
+        }
+    }
+    catch{
+        return;
+    }
+    res.cookie("DisplayInformation", DisplayInformation);
 }
 
+//When the notification system is put in, we could add another option to change the colour of your notifications
 
-//should we have a theme cookie
-//const themeCookie = res.cookie("theme", themename, {})
-//dont want it to be httpOnly, needs to be changed on client side, expire at the end of session 
-// (should be resent) <- use middleware
-// what if this cookie is expanded to be the entire of "cached" account info
-// Ofc it wont be used server side, but as a way to avoid unecessary server req?
-//const preferences = {
-//      theme: "one of the themes",
-//      profileIcon: "path/to/icon",
-//      Earnings: earnings object with the three earnings at 
-// }
-//const preferenceCookie = res.cookie("accountpreferences", preferences)
-//dont want it to be http only, but expire at  end of session^^
+module.exports = {
+    validateSessionInfocookie,
+    createDisplayInformationCookie
+}

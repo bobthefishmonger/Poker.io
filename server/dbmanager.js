@@ -149,14 +149,12 @@ async function validateUsername(Username, Password){
                 reject(err.message);
             }else{
                 if (!row){
-                    console.log("error is invalid usernaem")
                     reject("Invalid Username");
                 }else{
                     if (await argon2.verify(row.Password, Password)){
                         resolve(row.AccountID);
                     }
                     else{
-                        console.log("error is invalid password")
                         reject("Invalid Password")
                     }
                 }
@@ -174,7 +172,6 @@ async function updateIPtable(AccountID, IP) {
              VALUES (?, ?)`, [AccountID, IP],
             (err) =>{
                 if (err) {
-                    console.log("Error is with IP table")
                     reject(err.message);
                 } else {
                     resolve("IP changed");
@@ -193,7 +190,6 @@ async function updateSessionTable(AccountID, SessionInfo, Stayloggedin){
             SET SessionID=?, ExpireryDate=?, Stayloggedin=?
             WHERE AccountID=?`, [SessionInfo.SessionID, SessionInfo.Expirery, Stayloggedin, AccountID], (err) => {
                 if (err){
-                    console.log("Error is with Updating session table")
                     reject(err.message);
                 }else{
                     resolve("Sessiontable changed");
@@ -231,7 +227,7 @@ async function checkSessionInfo(SessionInfo){
         db.get(
             `SELECT AccountID
             FROM tblSession
-            WHERE SessionID = ? AND ExpireryDate = ? AND StayLoggedIN = 1`, [SessionInfo.SessionID, SessionInfo.Expirery],
+            WHERE SessionID = ? AND ExpireryDate = ? AND Stayloggedin = 1`, [SessionInfo.SessionID, SessionInfo.Expirery],
             (err, row) =>{
         if (err){
             console.error(err.message); reject(err.message);
@@ -249,7 +245,7 @@ async function updateSessionInfo(oldSessionID, SessionInfo) {
         db.run(
             `UPDATE tblSession
             SET SessionID=?, ExpireryDate=?
-            WHERE SessionID=? AND Stayloggedin=1`,
+            WHERE SessionID=?`,
             [SessionInfo.SessionID,SessionInfo.Expirery, oldSessionID],
             (err) => {
                 if (err) {
@@ -291,7 +287,6 @@ async function validIP(AccountID, IP){
             WHERE AccountID=? AND IP=?`, [AccountID, IP]
             , async (err, row) => {
                 if (err){
-                    console.log("Error is with IP")
                     reject(err.message);
                 }else{
                     if (row){
@@ -306,6 +301,27 @@ async function validIP(AccountID, IP){
     })
 }
 
+//preferences
+
+function updatePreference(AccountID, theme, file){
+    return new Promise((resolve, reject) => {
+        const db = dbconnection();
+        db.run(
+            `UPDATE tblPreferences
+            SET Theme=?,ImagePath=?
+            WHERE AccountID=?`, [theme, file, AccountID], (err) =>{
+                if (err){
+                reject(err.message); 
+                }else{
+                    resolve(true);
+                }
+                dbclose(db);
+            }
+        )
+    })
+}
+
+
 module.exports = {  
     checkSessionInfo,
     updateSessionInfo,
@@ -316,5 +332,6 @@ module.exports = {
     updateSessionTable,
     getVisualsandEarnings,
     getUsername,
-    validIP
+    validIP,
+    updatePreference
 }

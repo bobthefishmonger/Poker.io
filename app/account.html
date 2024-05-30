@@ -5,15 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Account</title>
     <link rel="icon" href="../assets/favicon.png">
-    <link rel="stylesheet" href="../css/app.css">
-    <link rel="stylesheet" href="../css/account.css">
+    <link rel="stylesheet" id="appcsslink" href="../css/Default/app.css">
+    <link rel="stylesheet" id="accountscsslink" href="../css/Default/accounts.css">
 </head>
 <body>
     <p>This is an account page</p>
+    <div class="content">
+        <div class="header"></div>
+        <div class="activity">
+            <div class="profile">
+                <p>Profile Name</p>
+                <img alt="Profile Icon" id="profileicon">
+            </div>
+            <div class="options">
+                <select id="themechoices">
+                    <option>_</option>
+                    <option value="Light">Light</option>
+                    <option value="Default">Dark</option>
+                </select>
+                <button id="themesubmitbtn">Submit</button>
+                <input type="checkbox">
+                <input id="profilepicinput" type="file" accept=".png, .jpg, .jpeg">
+                <button id="iconsubmitbtn">Submit</button>
+                <p id="successmessage"></p>
+            </div>
+            <div class="logout">
+                <a id="logoutbtn" href="/account/logout">Log Out</a>
+                <!-- could replace with a button, which could have additional check "Are you sure" -->
+            </div>
+        </div>
+    </div>
 </body>
 <script src="/socket.io/socket.io.js"></script>
 <script>
 const socket = io();
 </script>
 <script src="../js/app.js"></script>
+<script src="../js/accounts.js"></script>
 </html>

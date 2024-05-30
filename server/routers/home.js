@@ -10,7 +10,7 @@ router.get("/", async (req, res) =>{
 router.get("/home", async (req, res) =>{
     sendhtml(res, "home");
 });
-router.get("/leaderboard", async (req, res) => {
+router.get("/leaderboard", async (req, res) =>{
     sendhtml(res, "leaderboard");
 });
 router.get("/404error", (req, res) =>{

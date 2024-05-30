@@ -6,7 +6,7 @@ async function submitsignup(event) {
         username: document.getElementById("username_input").value,
         password: document.getElementById("password_input").value,
         stayLoggedIn: document.getElementById("stayloggedin_input").checked,
-        theme: "Default", // Use the cookie for the active theme
+        theme: "Default",
         imagePath: "default.png" // Add an input for them to choose
     };
     try{
@@ -26,4 +26,7 @@ async function submitsignup(event) {
     }catch{
         Errortext.innerHTML = "An Error was detected, please retry"
     }
+}
+window.onload = ()=>{
+    setCSStheme("signup");
 }

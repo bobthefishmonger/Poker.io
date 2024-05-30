@@ -26,3 +26,7 @@ async function submitsignup(event) {
         Errortext.innerHTML = "An Error was detected, please retry"
     }
 }
+
+window.onload = ()=>{
+    setCSStheme("login");
+}
