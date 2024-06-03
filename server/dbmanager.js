@@ -321,6 +321,32 @@ function updatePreference(AccountID, theme, file){
     })
 }
 
+function getPublicInfo(AccountID){
+    return new Promise((resolve, reject) => {
+        const db = dbconnection();
+        db.get(
+            `SELECT tblAccounts.Username, tblEarnings.PokerEarnings, tblEarnings.BlackjackEarnings,
+            tblEarnings.RouletteEarnings, tblPreferences.ImagePath
+            FROM tblAccounts
+            INNER JOIN tblEarnings ON tblEarnings.AccountID = tblAccounts.AccountID
+            INNER JOIN tblPreferences ON tblPreferences.AccountID = tblAccounts.AccountID
+            WHERE tblAccounts.AccountID = ?
+            `, [AccountID], (err, row) => {
+                if (err){
+                    reject(err.message);
+                }else{
+                    if (!row){
+                        reject("No Account Found");
+                    }
+                    else{
+                        resolve(row);
+                    }
+                }
+                dbclose(db);
+            }
+        )
+    })
+}
 
 module.exports = {  
     checkSessionInfo,
@@ -333,5 +359,6 @@ module.exports = {
     getVisualsandEarnings,
     getUsername,
     validIP,
-    updatePreference
+    updatePreference,
+    getPublicInfo
 }

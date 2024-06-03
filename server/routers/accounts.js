@@ -5,6 +5,7 @@ const accounts = require("../accounts.js");
 const multer = require("multer");
 const cookies = require("../cookies.js");
 const db = require("../dbmanager.js");
+const fs = require("fs");
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -14,7 +15,13 @@ const storage = multer.diskStorage({
         cb(null, req.session.AccountInfo.AccountID + path.extname(file.originalname));
     }
 });
-const upload = multer({ storage: storage });
+const upload = multer({ storage: storage, fileFilter: (req, file, cb) => {
+        if (!file.mimetype.startsWith("image/")) {
+            return cb(new Error("Not image"), false);
+        }
+        cb(null, true);
+    }
+});
 
 function sendhtml(res, file) {
     res.sendFile(path.join(__dirname, "..", "..", "app", `${file}.html`));    
@@ -140,13 +147,27 @@ router.post("/updatetheme", async (req, res) => {
     }
 })
 
-router.get("/:accountName", (req,res) => {
-    if (!isNaN(req.params.accountName)) {
-        sendhtml(res, "publicaccount");
-    }else{
-        res.redirect(`/account/missingaccount?account=${req.params.accountName}`)
+router.get("/:AccountID", async (req, res) => {
+    try {
+        const AccountID = req.params.AccountID;
+        const dbData = await db.getPublicInfo(AccountID);
+        const htmlFilePath = path.join(__dirname, "..", "..", "app", "publicaccount.html");
+        let data = fs.readFileSync(htmlFilePath, 'utf8');
+        let newFile = data.replace("{{Username}}", dbData.Username);
+        newFile = newFile.replace("{{imagePath}}", dbData.ImagePath);
+        newFile = newFile.replace("{{pokerEarnings}}", dbData.PokerEarnings);
+        newFile = newFile.replace("{{blackjackEarnings}}", dbData.BlackjackEarnings);
+        newFile = newFile.replace("{{rouletteEarnings}}", dbData.RouletteEarnings);
+        res.send(newFile);
+    } catch (err) {
+        if (err === "No Account Found") {
+            res.redirect(`/account/missingaccount?account=${req.params.AccountID}`);
+        } else {
+            console.error(err);
+            res.redirect("back");
+        }
     }
 });
 
 
-module.exports = router
+module.exports = router;

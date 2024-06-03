@@ -7,9 +7,26 @@
     <link rel="icon" href="../../assets/favicon.png">
     <link rel="stylesheet" id="appcsslink" href="../../css/Default/app.css">
     <link rel="stylesheet" id="publicaccountcsslink" href="../../css/Default/publicaccount.css">
+    <!-- Should we make it use their theme? -->
 </head>
 <body>
     <p>This is a public account file</p>
+    <img id="profileIcon" src="../../uploads/profileimage/{{imagePath}}" alt="profileicon">
+    <p id="username">{{Username}}</p>
+    <p>Earnings</p>
+    <table>
+        <tr>
+            <th>POKER |</th> 
+            <!-- Add proper dividers instead of just spaces -->
+            <th>BLACKJACK |</th>
+            <th>ROULETTE</th>
+        </tr>
+        <tr>
+            <td id="pokerEarnings">{{pokerEarnings}}</td>
+            <td id="blackjackEarnings">{{blackjackEarnings}}</td>
+            <td id="rouletteEarnings">{{rouletteEarnings}}</td>
+        </tr>
+    </table>
 </body>
 <script src="/socket.io/socket.io.js"></script>
 <script>
