@@ -47,3 +47,5 @@ Made using express-js and Socket io
     	PRIMARY KEY("IPID"),
     	FOREIGN KEY("AccountID") REFERENCES "tblAccounts"("AccountID")
     );
+
+with thanks to http://suffe.cool/poker/evaluator.html for the poker evaluator theory
