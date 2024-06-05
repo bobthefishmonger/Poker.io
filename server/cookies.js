@@ -45,7 +45,7 @@ function createSessionInfoCookie(res){
 
 function resetSessionInfoCookie(res){
     res.clearCookie("SessionInfo");
-    let data  = createSessionInfoCookie(res);
+    let data = createSessionInfoCookie(res);
     data = JSON.parse(data);
     return data
 }
@@ -103,5 +103,7 @@ function createDisplayInformationCookie(req, res){
 
 module.exports = {
     validateSessionInfocookie,
-    createDisplayInformationCookie
+    createDisplayInformationCookie,
+    resetSessionInfoCookie,
+    decrypt //for debug
 }

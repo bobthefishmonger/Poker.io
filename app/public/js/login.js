@@ -19,10 +19,10 @@ async function submitsignup(event) {
         if (response.success){
             window.location.href = window.location.origin + response.redirect;
         }else{
-            console.log(response);
             Errortext.innerHTML = response.message;
         }
-    }catch{
+    }catch (err){
+        console.error(err.message)
         Errortext.innerHTML = "An Error was detected, please retry"
     }
 }

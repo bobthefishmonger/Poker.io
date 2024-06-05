@@ -10,10 +10,43 @@
 </head>
 <body>
     <p>This is a poker page</p>
+    <p>We should have a list of public rooms for people to join</p>
+    <div>
+        <p>Test links</p>
+        <p>2500 games</p>
+        <a href="/games/poker/createroom?maxplayers=2&stacksize=2500">2 players</a>
+        <a href="/games/poker/createroom?maxplayers=3&stacksize=2500">3 players</a>
+        <a href="/games/poker/createroom?maxplayers=4&stacksize=2500">4 players</a>
+        <a href="/games/poker/createroom?maxplayers=5&stacksize=2500">5 players</a>
+        <a href="/games/poker/createroom?maxplayers=6&stacksize=2500">6 players</a>
+        <a href="/games/poker/createroom?maxplayers=7&stacksize=2500">7 players</a>
+        <a href="/games/poker/createroom?maxplayers=8&stacksize=2500">8 players</a>
+        <a href="/games/poker/createroom?maxplayers=9&stacksize=2500">9 players</a>
+        <p>5000 games</p>
+        <a href="/games/poker/createroom?maxplayers=2&stacksize=5000">2 players</a>
+        <a href="/games/poker/createroom?maxplayers=3&stacksize=5000">3 players</a>
+        <a href="/games/poker/createroom?maxplayers=4&stacksize=5000">4 players</a>
+        <a href="/games/poker/createroom?maxplayers=5&stacksize=5000">5 players</a>
+        <a href="/games/poker/createroom?maxplayers=6&stacksize=5000">6 players</a>
+        <a href="/games/poker/createroom?maxplayers=7&stacksize=5000">7 players</a>
+        <a href="/games/poker/createroom?maxplayers=8&stacksize=5000">8 players</a>
+        <a href="/games/poker/createroom?maxplayers=9&stacksize=5000">9 players</a>
+        <p>10000 games</p>
+        <a href="/games/poker/createroom?maxplayers=2&stacksize=5000">2 players</a>
+        <a href="/games/poker/createroom?maxplayers=3&stacksize=5000">3 players</a>
+        <a href="/games/poker/createroom?maxplayers=4&stacksize=5000">4 players</a>
+        <a href="/games/poker/createroom?maxplayers=5&stacksize=5000">5 players</a>
+        <a href="/games/poker/createroom?maxplayers=6&stacksize=5000">6 players</a>
+        <a href="/games/poker/createroom?maxplayers=7&stacksize=5000">7 players</a>
+        <a href="/games /poker/createroom?maxplayers=8&stacksize=5000">8 players</a>
+        <a href="/games/poker/createroom?maxplayers=9&stacksize=5000">9 players</a>
+        
+    </div>
 </body>
 <script src="/socket.io/socket.io.js"></script>
 <script>
 const socket = io();
+const poker_socket = io("/poker");
 </script>
 <script src="../../js/app.js"></script>
 <script src="../../js/poker.js"></script>

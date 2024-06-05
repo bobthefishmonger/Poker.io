@@ -99,7 +99,7 @@ async function logInAuto(req, res){
     if (!SessionInfo[1][0]){
         SessionInfo = SessionInfo[0]
         req.session.SessionInfo = SessionInfo;
-        req.session.AccountInfo = {LoggedIn: false};
+        req.session.AccountInfo = {LoggedIn: false};     
         return "Should not be logged in";
     }else{
         try{

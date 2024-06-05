@@ -56,7 +56,7 @@ router.post("/login", async (req, res) => {
     }
     try {
         await accounts.logInUser(req, sessionInfo, username, password, stayLoggedIn);
-        res.json({ success: true, redirect: req.session.redirect });
+        res.json({ success: true, redirect: req.session.redirect || "/"});
     } catch (error) {
         if (error.message){
             res.json({ success: false, message: error.message });            
@@ -98,7 +98,9 @@ router.post("/signup", async (req, res) => {
 });
 
 router.get("/logout", (req, res) => {
-    req.session.AccountInfo = {LoggedIn: false};
+    req.session.AccountInfo = {LoggedIn: false};    
+    req.session.SessionInfo = cookies.resetSessionInfoCookie(res, req);
+    res.clearCookie("DisplayInformation");
     res.redirect(req.params.redirect || "/home");
 });
 

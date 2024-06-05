@@ -24,6 +24,10 @@ const db = require("./dbmanager.js");
     //cookies
 const cookieparser = require("cookie-parser");
 const cookies = require("./cookies.js");
+//games
+    //poker
+const poker_rooms = require("./games/poker/rooms.js");
+
 // Var dec
 const PORT = 8000;
     //middleware
@@ -46,7 +50,27 @@ const setDisplayInformation = async (req, res, next)=>{
     next();
 }
 //Socket
-io.engine.use(sessionmiddleware)
+io.engine.use(sessionmiddleware);
+const PokerIO = io.of("/poker");
+const BlackjackIO = io.of("/Blackjack");
+const RouletteIO = io.of("/Roulette");
+
+
+PokerIO.on("connection", (poker_socket) => {
+    const session = poker_socket.request.session;
+    poker_socket.on("disconnecting", ()=> {
+        poker_rooms.pokerDisconnect(session);
+    });
+});
+
+BlackjackIO.on("connection", (blackjack_socket) => {
+    const session = blackjack_socket.request.session;
+});
+
+RouletteIO.on("connection", (roulette_socket) => {
+    const session = roulette_socket.request.session;
+});
+
 io.on("connection", (socket) => {
     const session = socket.request.session;
     if (session.redirectNote){
@@ -54,7 +78,7 @@ io.on("connection", (socket) => {
         session.redirectNote = "";
         session.save((err)=>{
             if (err){
-                console.log(err.message);
+                console.error(err.message);
             }
         })
     }
@@ -74,7 +98,7 @@ app.use("/", homerouter);
 app.use("/games", gamesrouter);
 app.use("/account", accountrouter);
 app.all("*", (req,res) => {
-    // res.redirect("/404error");
+    res.redirect("/404error");
 });
 http.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
