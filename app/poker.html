@@ -12,35 +12,32 @@
     <p>This is a poker page</p>
     <p>We should have a list of public rooms for people to join</p>
     <div>
-        <p>Test links</p>
-        <p>2500 games</p>
-        <a href="/games/poker/createroom?maxplayers=2&stacksize=2500">2 players</a>
-        <a href="/games/poker/createroom?maxplayers=3&stacksize=2500">3 players</a>
-        <a href="/games/poker/createroom?maxplayers=4&stacksize=2500">4 players</a>
-        <a href="/games/poker/createroom?maxplayers=5&stacksize=2500">5 players</a>
-        <a href="/games/poker/createroom?maxplayers=6&stacksize=2500">6 players</a>
-        <a href="/games/poker/createroom?maxplayers=7&stacksize=2500">7 players</a>
-        <a href="/games/poker/createroom?maxplayers=8&stacksize=2500">8 players</a>
-        <a href="/games/poker/createroom?maxplayers=9&stacksize=2500">9 players</a>
-        <p>5000 games</p>
-        <a href="/games/poker/createroom?maxplayers=2&stacksize=5000">2 players</a>
-        <a href="/games/poker/createroom?maxplayers=3&stacksize=5000">3 players</a>
-        <a href="/games/poker/createroom?maxplayers=4&stacksize=5000">4 players</a>
-        <a href="/games/poker/createroom?maxplayers=5&stacksize=5000">5 players</a>
-        <a href="/games/poker/createroom?maxplayers=6&stacksize=5000">6 players</a>
-        <a href="/games/poker/createroom?maxplayers=7&stacksize=5000">7 players</a>
-        <a href="/games/poker/createroom?maxplayers=8&stacksize=5000">8 players</a>
-        <a href="/games/poker/createroom?maxplayers=9&stacksize=5000">9 players</a>
-        <p>10000 games</p>
-        <a href="/games/poker/createroom?maxplayers=2&stacksize=5000">2 players</a>
-        <a href="/games/poker/createroom?maxplayers=3&stacksize=5000">3 players</a>
-        <a href="/games/poker/createroom?maxplayers=4&stacksize=5000">4 players</a>
-        <a href="/games/poker/createroom?maxplayers=5&stacksize=5000">5 players</a>
-        <a href="/games/poker/createroom?maxplayers=6&stacksize=5000">6 players</a>
-        <a href="/games/poker/createroom?maxplayers=7&stacksize=5000">7 players</a>
-        <a href="/games /poker/createroom?maxplayers=8&stacksize=5000">8 players</a>
-        <a href="/games/poker/createroom?maxplayers=9&stacksize=5000">9 players</a>
-        
+        <form>
+            <select id="visibility">
+                <option value="public">Public</option>
+                <option value="private">Private</option>
+            </select> 
+            <select id="nplayers">
+                <option value=2>2</option>
+                <option value=3>3</option>
+                <option value=4>4</option>
+                <option value=5>5</option>
+                <option value=6>6</option>
+                <option value=7>7</option>
+                <option value=8>8</option>
+                <option value=9>9</option>
+                <option value=10>10</option>
+                <option value=11>11</option>
+                <option value=12>12</option>
+            </select>
+            <select id="stacksize">
+                <option value=2500>2500</option>
+                <option value=5000>5000</option>
+                <option value=10000>10000</option>
+            </select>
+        <button id="createroombtn">Create Room!</button>
+        </form>
+        <p id="errormsg"></p>
     </div>
 </body>
 <script src="/socket.io/socket.io.js"></script>

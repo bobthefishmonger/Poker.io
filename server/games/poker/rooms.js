@@ -3,15 +3,15 @@ const activerooms = new Map();
 const players = require("./players.js");
 
 class Poker_Room{
-    constructor(maxplayers, stacksize){
-        this.nplayers = 0; //the host would be redirected so they would add + 1
+    constructor(maxplayers, stacksize, visibility){
+        this.nplayers = 0;
         this.players = new Map();  // username, class 
         this.maxplayers = maxplayers;
         this.host = null; //set as the first player to join, they can add remove ect
         this.pot = 0;
         this.stacksize = stacksize;
         this.round = 0 //0 is people joining (pre-rounds)
-        // this.public = public      // add this flag later, when we add actual implimentation for the menu
+        this.visibility = visibility
         do{
             this.roomID = Math.trunc(100000 + Math.random() * 900000);
         } while (activerooms.has(this.roomID))
@@ -23,18 +23,22 @@ class Poker_Room{
 }
 
 function createRoom(req, res){
-    const maxplayers = req.query.maxplayers;
-    const stacksize = req.query.stacksize;
-    if (isNaN(maxplayers) || Number(maxplayers) < 2 || Number(maxplayers) > 9){
-        req.session.redirectNote = "Invalid Number of Players";
-        res.redirect("/games/poker");
+    let {visibility, maxplayers, stacksize} = req.body;
+    if (visibility !== "public" && visibility !== "private"){
+        res.json({"success": false, "errormessage": "Invalid visibility choice", "redirect":"/games/poker"});
+    }
+    else if (isNaN(maxplayers) || Number(maxplayers) < 2 || Number(maxplayers) > 12){
+        res.json({"success": false, "errormessage": "Invalid number of max players", "redirect":"/games/poker"});
     }
     else if (isNaN(stacksize) || (stacksize !== "2500" && stacksize !== "5000" && stacksize !== "10000")){
-        req.session.redirectNote = "Invalid Stacksize";
-        res.redirect("/games/poker");
+        res.json({"success": false, "errormessage": "Invalid stack size choice", "redirect":"/games/poker"});
     }else{
-        const room = new Poker_Room(maxplayers, stacksize);
-        res.send(`Created a room with ${maxplayers} players \n with a roomID <a href="/games/poker/${room.roomID}">${room.roomID}</a> \n and with a stack of ${room.stacksize}`);
+        const room = new Poker_Room(maxplayers, stacksize, visibility);
+        res.json({
+            "success": true,
+            "message": `Created a ${room.visibility} room with ${maxplayers} players \n with a roomID 
+            <a href="/games/poker/${room.roomID}">${room.roomID}</a> \n and with a stack of ${room.stacksize}`
+        });
     }
 }
 

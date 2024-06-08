@@ -6,6 +6,7 @@ const multer = require("multer");
 const cookies = require("../cookies.js");
 const db = require("../dbmanager.js");
 const fs = require("fs");
+const session = require("express-session");
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -97,16 +98,22 @@ router.post("/signup", async (req, res) => {
     }
 });
 
-router.get("/logout", (req, res) => {
-    req.session.AccountInfo = {LoggedIn: false};    
-    req.session.SessionInfo = cookies.resetSessionInfoCookie(res, req);
-    res.clearCookie("DisplayInformation");
-    res.redirect(req.params.redirect || "/home");
+router.post("/logout", (req, res) => {
+    try{
+        req.session.AccountInfo = {LoggedIn: false};    
+        req.session.SessionInfo = cookies.resetSessionInfoCookie(res, req);
+        res.clearCookie("DisplayInformation");
+        res.json({"success": true, "redirect": "/home"})
+    }
+    catch{
+        res.json({"success": false})
+    }
 });
 
 router.get("/missingaccount", (req, res) => {
     sendhtml(res, "missingPA");
-})
+});
+
 const uploadfile = (req, res, next)=>{
     upload.single("file")(req, res, async (err) => {
         if (err || !req.file) {
@@ -147,7 +154,7 @@ router.post("/updatetheme", async (req, res) => {
     }catch{
         res.json({success: false})
     }
-})
+});
 
 router.get("/:AccountID", async (req, res) => {
     try {

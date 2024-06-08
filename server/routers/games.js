@@ -16,19 +16,18 @@ router.get("/poker", async(req,res) =>{
     //what is we have something like /poker for meu and /poker?game={{gameID}}
     if (!req.session.AccountInfo.LoggedIn){
         req.session.redirectNote = "You cannot access Poker whilst not logged in"
-        res.redirect("/account/login?redirect=/games/poker");
+        res.redirect("/account/login    ?redirect=/games/poker");
     }else{
         req.session.redirect = req.query.redirect || "/";
         sendhtml(res, "poker");
     }
 });
 
-router.get("/poker/createroom", async (req, res) => {
+router.post("/poker/createroom", async (req, res) => {
     if (!req.session.AccountInfo.LoggedIn){
-        req.session.redirectNote = "You cannot access Poker whilst not logged in"
-        res.redirect("/account/login?redirect=/games/poker");
+        res.json({"success": false, "errormessage": "You cannot access Poker whilst not logged in", "redirect":"/account/login?redirect=/games/poker"});
     }else{
-        await poker_rooms.createRoom(req, res);
+        poker_rooms.createRoom(req, res);
     }
 });
 
