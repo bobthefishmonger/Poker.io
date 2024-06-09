@@ -1,3 +1,26 @@
+async function getpublicrooms(){
+    let response = await fetch("/games/poker/publicrooms", {method: "POST"});
+    response = await response.json();
+    const rooms = JSON.parse(response.rooms);
+    const table = document.getElementById("publicrooms");
+    table.innerHTML = `<tr>
+        <th>RoomID |</th>
+        <th>players | </th>
+        <th>maxplayers |</th>
+        <th>stacksize</th>
+    </tr>`
+    rooms.forEach((room) => {
+        table.innerHTML+= 
+        `<tr>
+            <td><a href="/games/poker/${room.RoomID}">${room.RoomID}</td>
+            <td>${room.nplayers}</td>
+            <td>${room.maxplayers}</td>
+            <td>${room.stacksize}</td>
+        </tr>
+        `
+    })
+}
+
 async function createRoom(event){
     event.preventDefault();
     let data = {
@@ -25,7 +48,18 @@ document.getElementById("createroombtn").onclick = async (event)=>{
     await createRoom(event);
 }
 
+document.getElementById("showroomsbtn").onclick = async (event)=>{
+    await getpublicrooms();
+}
 
-window.onload = ()=>{
+
+window.addEventListener("beforeunload", ()=>{
+    socket.disconnect(true);
+    poker_socket.disconnect(true)
+});
+
+
+window.onload = async ()=>{
     setCSStheme("poker");
+    await getpublicrooms();
 }

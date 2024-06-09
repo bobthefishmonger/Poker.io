@@ -5,7 +5,7 @@ const app = express();
 const session = require("express-session");
 const http = require("http").Server(app);
 const bodyparser = require("body-parser");
-
+const nocache = require("nocache");
     //Express routers
 const homerouter = require("./routers/home.js");
 const gamesrouter = require("./routers/games.js");
@@ -41,7 +41,6 @@ const sessionmiddleware = session(
 const setsessioninfo = async (req, res, next)=>{
     if (!req.session.AccountInfo){
         await accounts.logInAuto(req, res);
-        req.session.IP = req.IP;
     }
     next();
 }
@@ -59,7 +58,8 @@ const RouletteIO = io.of("/Roulette");
 PokerIO.on("connection", (poker_socket) => {
     const session = poker_socket.request.session;
     poker_socket.on("disconnecting", ()=> {
-        poker_rooms.pokerDisconnect(session);
+        poker_rooms.pokerDisconnect(session, 
+        poker_socket.handshake.headers.referer.split(poker_socket.handshake.headers.host)[1]);
     });
 });
 
@@ -85,8 +85,8 @@ io.on("connection", (socket) => {
 });
 
 
-
 //Express
+app.use(nocache())
 app.use(express.static(path.join(__dirname, "..", "app", "public")));
 app.use("/uploads", uploadrouter);
 app.use(sessionmiddleware);

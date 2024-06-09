@@ -61,3 +61,7 @@ window.onload = () => {
     document.getElementById("profileicon").setAttribute("src", `../../uploads/profileimage/${getDisplayInformation().profileIcon}`);
     setCSStheme("accounts");
 }
+
+window.addEventListener("beforeunload", ()=>{
+    socket.disconnect(true);
+});

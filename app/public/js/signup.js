@@ -30,3 +30,6 @@ async function submitsignup(event) {
 window.onload = ()=>{
     setCSStheme("signup");
 }
+window.addEventListener("beforeunload", ()=>{
+    socket.disconnect(true);
+});

@@ -1,17 +1,19 @@
 const activerooms = new Map();
-
 const players = require("./players.js");
 
 class Poker_Room{
     constructor(maxplayers, stacksize, visibility){
-        this.nplayers = 0;
         this.players = new Map();  // username, class 
+        this.usernames = [] //usernames
+        this.nplayers = 0;
         this.maxplayers = maxplayers;
         this.host = null; //set as the first player to join, they can add remove ect
         this.pot = 0;
         this.stacksize = stacksize;
         this.round = 0 //0 is people joining (pre-rounds)
         this.visibility = visibility
+        this.deletetimer = null; // we could change this to x amount of delete room, if no one has joined
+                                //depends if the host will be auto redirected or not
         do{
             this.roomID = Math.trunc(100000 + Math.random() * 900000);
         } while (activerooms.has(this.roomID))
@@ -45,25 +47,33 @@ function createRoom(req, res){
 
 function checkroomID(req, res, roomID){
     if (!roomID || isNaN(roomID) || !(roomID.toString().length === 6)){
-        res.send("There is an error");
+        res.send("Invalid roomID");
     }else{
         roomID = Number(roomID);
         if (!activerooms.has(roomID)){
             res.send("Not an active room");
         }else{
             const room = activerooms.get(roomID);
+            clearTimeout(room.deletetimer);
+            room.deletetimer = null;
             if (!room.round){
                 if (room.nplayers < room.maxplayers){
-                    room.nplayers += 1; 
                     req.session.PokerData = {
                         roomID: room.roomID,
-                        nplayers: room.nplayers,
                         maxplayers: room.maxplayers,
                         gameactive: false
                     }
-                    new players.Player(req.session.AccountInfo.Username, room.stacksize);
+                    room.nplayers += 1;
+                    room.players.set(req.session.AccountInfo.Username, new players.Player(req.session.AccountInfo.Username, room.stacksize, room.nplayers === 1));
+                    room.usernames.push(req.session.AccountInfo.Username);
+                    if (room.nplayers === 1){
+                        room.host = room.players.get(req.session.AccountInfo.Username);
+                    }
                     req.session.ingame = true;
-                    res.send(`${roomID} \n This room has ${room.nplayers} players in out of ${room.maxplayers} <script src="/socket.io/socket.io.js"></script>
+                    res.send(`${roomID} \n This room has ${room.nplayers} players in out of ${room.maxplayers}
+                     You are host: ${room.players.get(req.session.AccountInfo.Username).host} (note this does not refresh, 
+                     but changing host works [if the user disconnects])
+                    <script src="/socket.io/socket.io.js"></script>
                     <script>
                     const socket = io();
                     const poker_socket = io("/poker");
@@ -81,31 +91,55 @@ function checkroomID(req, res, roomID){
     }
 };
 
-async function pokerDisconnect(session){
-    if (session.PokerData){
+function showpublicrooms(req, res){
+    const publicRooms = Array.from(activerooms.values())
+                         .filter(room => room.visibility === "public" && room.round === 0)
+                         .map(room => ({
+                            "RoomID": room.roomID,
+                            "nplayers": room.nplayers,
+                            "maxplayers": room.maxplayers,
+                            "stacksize": room.stacksize
+                        }));
+    res.json({"rooms": JSON.stringify(publicRooms)});
+};
+
+
+async function pokerDisconnect(session, path){
+    if (session.PokerData && activerooms.get(Number(path.slice(-6)))){
         if (session.PokerData.gameactive){
             activeDisconnect(session);
         }
         else{
             waitingDisconnect(session);
         }
+        session.ingame = false;
+        session.save();
     }
-    session.ingame = false;
-    session.save();
 }
 
 function waitingDisconnect(session) {
     const room = activerooms.get(session.PokerData.roomID);
     room.nplayers -= 1;
-    room.players.delete(players.activePlayers.get(session.AccountInfo.Username));
+    room.players.delete(players.activePlayers.get(session.AccountInfo.Username)); //not deleting right
+    room.usernames = room.usernames.filter(username=> username !== session.AccountInfo.Username);
+    console.log(room.host)
+    if (room.usernames[0]){
+        room.players.get(room.usernames[0]).host = true;
+        room.host = room.players.get(room.usernames[0]);
+        console.log(room.host)
+    }else{
+        room.deletetimer = setTimeout(()=>{room.deletethis();console.log("deleted")},5*60*1000);
+    }
     delete session.PokerData;
 }
 
 function activeDisconnect(session){
+    //to be added
 }
 
 module.exports = {
     checkroomID,
     createRoom,
-    pokerDisconnect
+    pokerDisconnect,
+    showpublicrooms
 }

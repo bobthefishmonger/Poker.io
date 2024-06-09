@@ -9,6 +9,7 @@ function sendhtml(res, file) {
 router.get("/", async(req,res) =>{
     sendhtml(res, "gamelist");
 });
+
 router.get("/poker", async(req,res) =>{
     //should /poker be more like a menu, where you choose your room ect
     //we should add accept/decline notification for people to join a room
@@ -16,9 +17,8 @@ router.get("/poker", async(req,res) =>{
     //what is we have something like /poker for meu and /poker?game={{gameID}}
     if (!req.session.AccountInfo.LoggedIn){
         req.session.redirectNote = "You cannot access Poker whilst not logged in"
-        res.redirect("/account/login    ?redirect=/games/poker");
+        res.redirect("/account/login?redirect=/games/poker");
     }else{
-        req.session.redirect = req.query.redirect || "/";
         sendhtml(res, "poker");
     }
 });
@@ -26,10 +26,16 @@ router.get("/poker", async(req,res) =>{
 router.post("/poker/createroom", async (req, res) => {
     if (!req.session.AccountInfo.LoggedIn){
         res.json({"success": false, "errormessage": "You cannot access Poker whilst not logged in", "redirect":"/account/login?redirect=/games/poker"});
+    }else if (req.session.ingame){
+        res.json({"success": false, "errormessage": "You cannot access multiple games at once"});
     }else{
         poker_rooms.createRoom(req, res);
     }
 });
+
+router.post("/poker/publicrooms", (req, res)=>{
+    poker_rooms.showpublicrooms(req, res);
+})
 
 router.get("/poker/:roomID", (req, res) => {
     //Note: The ingame flag might have to be moved, depending on the implimentation of the actual game being played
@@ -39,7 +45,7 @@ router.get("/poker/:roomID", (req, res) => {
     }else{
         if (!req.session.AccountInfo.LoggedIn){
             req.session.redirectNote = "You cannot access Poker whilst not logged in"
-            res.redirect("/account/login?redirect=games/poker");
+            res.redirect(`/account/login?redirect=/games/poker/${req.params.roomID}`);
         }else{
             poker_rooms.checkroomID(req, res, req.params.roomID);
         }
@@ -49,7 +55,7 @@ router.get("/poker/:roomID", (req, res) => {
 router.get("/blackjack", async(req,res) =>{
     if (!req.session.AccountInfo.LoggedIn){
         req.session.redirectNote = "You cannot access Blackjack whilst not logged in"
-        res.redirect("/account/login?redirect=games/blackjack");
+        res.redirect("/account/login?redirect=/games/blackjack");
     }else{
         req.session.redirect = req.query.redirect || "/";
         sendhtml(res, "blackjack");
@@ -58,10 +64,11 @@ router.get("/blackjack", async(req,res) =>{
 router.get("/roulette", async(req,res) =>{
     if (!req.session.AccountInfo.LoggedIn){
         req.session.redirectNote = "You cannot access Roulette whilst not logged in"
-        res.redirect("/account/login?redirect=games/roulette");
+        res.redirect("/account/login?redirect=/games/roulette");
     }else{
         req.session.redirect = req.query.redirect || "/";
         sendhtml(res, "roulette");
     }
 });
+
 module.exports = router

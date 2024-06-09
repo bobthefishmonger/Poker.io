@@ -1,6 +1,7 @@
 const sqlite3 = require("sqlite3").verbose();
 const path = require("path");
 const argon2 = require("argon2");
+const { JSONCookie } = require("cookie-parser");
 //Utils
 function dbconnection(){
     return new sqlite3.Database(path.join(__dirname, "database", "accounts.db"), (err) =>{
@@ -320,7 +321,7 @@ function updatePreference(AccountID, theme, file){
         )
     })
 }
-
+//Public accounts
 function getPublicInfo(AccountID){
     return new Promise((resolve, reject) => {
         const db = dbconnection();
@@ -348,6 +349,25 @@ function getPublicInfo(AccountID){
     })
 }
 
+//game winnnings
+function updatewinnings(AccountID,poker, roulette, blackjack){
+    return new Promise((resolve, reject) => {
+        const db = dbconnection();
+        db.run(`
+            UPDATE tblEarnings
+            SET PokerEarnings=?, BlacjackEarnings=?, RouletteEarnings=?
+            WHERE AccountID=`, [poker, roulette, blackjack, AccountID]
+        , (err) => {
+            if (err){
+                reject(err.message);
+            }else{
+                resolve("updated");
+            }
+        })
+    })
+}
+
+
 module.exports = {  
     checkSessionInfo,
     updateSessionInfo,
@@ -360,5 +380,6 @@ module.exports = {
     getUsername,
     validIP,
     updatePreference,
-    getPublicInfo
+    getPublicInfo,
+    updatewinnings
 }
