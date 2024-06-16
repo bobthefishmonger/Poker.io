@@ -44,48 +44,52 @@ function createRoom(req, res){
     }
 }
 
+function joinroom(req, res, roomID, room){
+    req.session.PokerData = {
+        roomID: room.roomID,
+        maxplayers: room.maxplayers,
+        gameactive: false
+    }
+    room.nplayers += 1;
+    room.players.set(req.session.AccountInfo.Username, new players.Player(req.session.AccountInfo.Username, room.stacksize, room.nplayers === 1));
+    room.usernames.push(req.session.AccountInfo.Username);
+    if (room.nplayers === 1){
+        room.host = room.players.get(req.session.AccountInfo.Username);
+    }
+    req.session.ingame = true;
+    res.json({success: true, message: `${roomID} \n This room has ${room.nplayers} players in out of ${room.maxplayers}
+     You are host: ${room.players.get(req.session.AccountInfo.Username).host} (note this does not refresh, 
+     but changing host works [if the user disconnects])
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+    const socket = io();
+    const poker_socket = io("/poker");
+    window.addEventListener("beforeunload", ()=>{
+        poker_socket.disconnect(true)
+    });
+    </script>`});
+}
+
 
 function checkroomID(req, res, roomID){
     if (!roomID || isNaN(roomID) || !(roomID.toString().length === 6)){
-        res.send("Invalid roomID");
+        res.json({success: false, message:"Invalid roomID"});
     }else{
         roomID = Number(roomID);
         if (!activerooms.has(roomID)){
-            res.send("Not an active room");
+            res.json("Not an active room");
         }else{
             const room = activerooms.get(roomID);
             clearTimeout(room.deletetimer);
             room.deletetimer = null;
             if (!room.round){
                 if (room.nplayers < room.maxplayers){
-                    req.session.PokerData = {
-                        roomID: room.roomID,
-                        maxplayers: room.maxplayers,
-                        gameactive: false
-                    }
-                    room.nplayers += 1;
-                    room.players.set(req.session.AccountInfo.Username, new players.Player(req.session.AccountInfo.Username, room.stacksize, room.nplayers === 1));
-                    room.usernames.push(req.session.AccountInfo.Username);
-                    if (room.nplayers === 1){
-                        room.host = room.players.get(req.session.AccountInfo.Username);
-                    }
-                    req.session.ingame = true;
-                    res.send(`${roomID} \n This room has ${room.nplayers} players in out of ${room.maxplayers}
-                     You are host: ${room.players.get(req.session.AccountInfo.Username).host} (note this does not refresh, 
-                     but changing host works [if the user disconnects])
-                    <script src="/socket.io/socket.io.js"></script>
-                    <script>
-                    const socket = io();
-                    const poker_socket = io("/poker");
-                    window.addEventListener("beforeunload", ()=>{
-                        poker_socket.disconnect(true)
-                    });
-                    </script>`);
+                    joinroom(req, res, roomID, room);
                 }else{
-                    res.send(`${room.roomID} is already full. Please join another room, or contact the host`);
+                    res.json({success: false, message:`${room.roomID} is already full. Please join another room, or contact the host`});
                 }
             }else{
-                res.send(`This game has already begun. Please join another room, or contact the host`);
+                res.json({success: false, messsage:`This game has already begun. Please join another room, or contact the host`});
             }
         }
     }

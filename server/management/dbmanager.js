@@ -1,10 +1,9 @@
 const sqlite3 = require("sqlite3").verbose();
 const path = require("path");
 const argon2 = require("argon2");
-const { JSONCookie } = require("cookie-parser");
 //Utils
 function dbconnection(){
-    return new sqlite3.Database(path.join(__dirname, "database", "accounts.db"), (err) =>{
+    return new sqlite3.Database(path.join(__dirname, "..", "database", "accounts.db"), (err) =>{
         if (err){
             return console.error(err.message);
         }

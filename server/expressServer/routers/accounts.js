@@ -1,16 +1,15 @@
 const express = require("express");
 const path = require("path");
 const router = express.Router();
-const accounts = require("../accounts.js");
+const accounts = require("../../management/accounts.js");
 const multer = require("multer");
-const cookies = require("../cookies.js");
-const db = require("../dbmanager.js");
+const cookies = require("../../management/cookies.js");
+const db = require("../../management/dbmanager.js");
 const fs = require("fs");
-const session = require("express-session");
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, "..", "database","uploads"));
+        cb(null, path.join(__dirname, ".." ,"..", "database","uploads"));
     },
     filename: (req, file, cb) => {
         cb(null, req.session.AccountInfo.AccountID + path.extname(file.originalname));
@@ -25,7 +24,7 @@ const upload = multer({ storage: storage, fileFilter: (req, file, cb) => {
 });
 
 function sendhtml(res, file) {
-    res.sendFile(path.join(__dirname, "..", "..", "app", `${file}.html`));    
+    res.sendFile(path.join(__dirname, "..", "..", "..", "app", `${file}.html`));    
 };
 
 router.get("/", (req, res) => {
@@ -160,7 +159,7 @@ router.get("/:AccountID", async (req, res) => {
     try {
         const AccountID = req.params.AccountID;
         const dbData = await db.getPublicInfo(AccountID);
-        const htmlFilePath = path.join(__dirname, "..", "..", "app", "publicaccount.html");
+        const htmlFilePath = path.join(__dirname, "..", "..", "..", "app", "publicaccount.html");
         let data = fs.readFileSync(htmlFilePath, 'utf8');
         let newFile = data.replace("{{Username}}", dbData.Username);
         newFile = newFile.replace("{{imagePath}}", dbData.ImagePath);

@@ -1,9 +1,10 @@
 const express = require("express");
 const path = require("path");
 const router = express.Router()
-const poker_rooms = require("../games/poker/rooms.js");
+const poker_rooms = require("../../games/poker/rooms.js");
+
 function sendhtml(res, file) {
-    res.sendFile(path.join(__dirname, "..", "..", "app", `${file}.html`));
+    res.sendFile(path.join(__dirname, ".." ,"..", "..", "app", `${file}.html`));
 };
 
 router.get("/", async(req,res) =>{
@@ -11,10 +12,6 @@ router.get("/", async(req,res) =>{
 });
 
 router.get("/poker", async(req,res) =>{
-    //should /poker be more like a menu, where you choose your room ect
-    //we should add accept/decline notification for people to join a room
-    //or
-    //what is we have something like /poker for meu and /poker?game={{gameID}}
     if (!req.session.AccountInfo.LoggedIn){
         req.session.redirectNote = "You cannot access Poker whilst not logged in"
         res.redirect("/account/login?redirect=/games/poker");
@@ -33,12 +30,23 @@ router.post("/poker/createroom", async (req, res) => {
     }
 });
 
-router.post("/poker/publicrooms", (req, res)=>{
-    poker_rooms.showpublicrooms(req, res);
-})
+router.post("/poker/joinroom", async (req, res) => {
+    const {roomID} = req.body;
+    if (req.session.ingame){
+        req.session.redirectNote = "You cannot access multiple games at once"
+        res.redirect("/home");
+    }else{
+        if (!req.session.AccountInfo.LoggedIn){
+            req.session.redirectNote = "You cannot access Poker whilst not logged in"
+            res.redirect(`/account/login?redirect=/games/poker/${roomID}`);
+        }else{
+            poker_rooms.checkroomID(req, res, roomID);
+        }
+    }
+});
+
 
 router.get("/poker/:roomID", (req, res) => {
-    //Note: The ingame flag might have to be moved, depending on the implimentation of the actual game being played
     if (req.session.ingame){
         req.session.redirectNote = "You cannot access multiple games at once"
         res.redirect("/home");
