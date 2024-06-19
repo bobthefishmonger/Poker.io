@@ -14,9 +14,11 @@ const cookies = require("../management/cookies.js");
 const crypto = require("crypto");
 const path = require("path");
 
+let RedisStore;
 
 const sessionmiddleware = session(
     {
+    store: RedisStore,
     secret: crypto.randomBytes(32).toString("hex"),
     resave: true,
     saveUninitialized: true
@@ -49,4 +51,9 @@ function expressSetup(express, app){
     });
 }
 
-module.exports = {expressSetup, sessionmiddleware}
+module.exports = (redis) => {
+    RedisStore = redis.store
+    RedisClient = redis.RedisClient
+    return {expressSetup, sessionmiddleware}
+}
+//use async RedisClient.get(`sess:${req.sessionID}`)

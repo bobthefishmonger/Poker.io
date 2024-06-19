@@ -12,7 +12,10 @@ body{
     height: calc(100vh - --header_height);
     width: 100vw;
 }
-
+a {
+    background-color: white;
+    color: blue;
+}
 /* .header {
     position: fixed;
     top: 0;

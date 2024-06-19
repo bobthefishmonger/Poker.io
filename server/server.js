@@ -5,13 +5,12 @@ const http = require("http").Server(app);
 const io = require("socket.io")(http);
 require("dotenv").config();
 
-const expressapp = require("./expressServer/expressSetup.js");
-const sockets = require("./socketServer/Socket.js"); 
+const redis = require("./expressServer/redis.js");
+const expressapp = require("./expressServer/expressSetup.js")(redis);
+const sockets = require("./socketServer/Socket.js")(redis); 
 
 expressapp.expressSetup(express, app);
 sockets.socketsetup(io, expressapp.sessionmiddleware);
-//js file imports
-
 
 http.listen(process.env.PORT, () => {
     console.log(`Listening`);

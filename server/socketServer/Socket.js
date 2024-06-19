@@ -1,6 +1,6 @@
 const socketutils = require("./socketutils.js");
 const poker_rooms = require("../games/poker/rooms.js");
-
+let RedisClient;
 //Socket
 function socketsetup(io, middleware){
     io.engine.use(middleware);
@@ -19,6 +19,7 @@ function socketsetup(io, middleware){
         await socketutils.nextsetup(socket);
     });
 }
-module.exports = {
-    socketsetup
+module.exports = (redis) => {
+    RedisClient = redis.RedisClient
+    return {socketsetup}
 }

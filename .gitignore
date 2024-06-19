@@ -1,6 +1,5 @@
 /node_modules
-/server/database/uploads
-/server/database/accounts.db
+/server/database/*
 /package-lock.json
 /package.json
 /.env
