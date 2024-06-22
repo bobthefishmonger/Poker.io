@@ -5,14 +5,14 @@ Made using express-js and Socket io
 
  SQL for table creation   
 
-        CREATE TABLE "tblAccounts" (
+    CREATE TABLE "tblAccounts" (
         	"AccountID"	INTEGER,
         	"Username"	TEXT,
         	"Password"	TEXT,
         	PRIMARY KEY("AccountID")
-        );
+    );
     
-        CREATE TABLE "tblEarnings" (
+    CREATE TABLE "tblEarnings" (
         	"EarningsID"	INTEGER,
         	"AccountID"	INTEGER,
         	"PokerEarnings"	INTEGER,
@@ -20,7 +20,7 @@ Made using express-js and Socket io
         	"RouletteEarnings"	INTEGER,
         	FOREIGN KEY("AccountID") REFERENCES "tblAccounts"("AccountID"),
         	PRIMARY KEY("EarningsID")
-        );
+    );
     
     CREATE TABLE "tblPreferences" (
     	"PreferenceID"	INTEGER,

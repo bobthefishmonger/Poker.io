@@ -11,16 +11,16 @@ const uploadrouter = require("./routers/uploads.js");
 const accounts = require("../management/accounts.js");
 const cookies = require("../management/cookies.js");
 
+const RedisClient = require("./redis.js");
+
 const crypto = require("crypto");
 const path = require("path");
 
-let RedisStore;
-
 const sessionmiddleware = session(
     {
-    store: RedisStore,
+    store: RedisClient.store,
     secret: crypto.randomBytes(32).toString("hex"),
-    resave: true,
+    resave: false,
     saveUninitialized: true
     }
 )
@@ -49,11 +49,9 @@ function expressSetup(express, app){
     app.all("*", (req,res) => {
         res.redirect("/404error");
     });
+    return sessionmiddleware;
 }
 
-module.exports = (redis) => {
-    RedisStore = redis.store
-    RedisClient = redis.RedisClient
-    return {expressSetup, sessionmiddleware}
+module.exports = {
+    expressSetup
 }
-//use async RedisClient.get(`sess:${req.sessionID}`)
