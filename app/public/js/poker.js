@@ -1,3 +1,13 @@
+socket.on("nextsetup", (callback)=>{
+    poker_socket = io("/poker");
+    callback();
+});
+
+async function joinprivroom(e){
+    e.preventDefault();
+    window.location.href = window.location.origin + `/games/poker/${document.getElementById("privroomIDinput").value}`
+}
+
 async function getpublicrooms(){
     let response = await fetch("/games/poker/publicrooms", {method: "POST"});
     response = await response.json();
@@ -38,7 +48,7 @@ async function createRoom(event){
     });
     response = await response.json()
     if (response.success){
-        document.querySelector("body").innerHTML = response.message;
+        window.location.href = window.location.origin + response.redirect;
     }else{
         document.getElementById("errormsg").innerHTML = response.errormessage;
     }

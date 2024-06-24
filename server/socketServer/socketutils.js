@@ -1,3 +1,5 @@
+const RedisClient = require("../expressServer/redis.js");
+
 const poker_sockets = new Map();
 const blackjack_sockets = new Map();
 const roulette_sockets = new Map();
@@ -7,7 +9,29 @@ const sockets = [poker_sockets, blackjack_sockets, roulette_sockets, globalsocke
 const types = ["poker_socket", "blackjack_socket", "roulette_socket", "socket"]
 
 function getpath(socket){
-    return socket.handshake.headers.referer.split(socket.handshake.headers.host)[1]
+    return socket.request.headers.referer.split(socket.request.headers.host)[1]
+}
+
+async function anysocketconnect(socket, type){
+    try{
+        sockets[type].set(socket.id, socket);
+        await RedisClient.setSession(socket.request.sessionID, `socketids.${types[type]}`, socket.id);
+    }
+    catch{
+        console.warn("Already open whilst loading?");
+        socket.emit("refresh");
+    }
+    return socket.request.sessionID;
+}
+
+async function anysocketdisconnect(socket, type){
+    try{
+        await RedisClient.setSession(socket.request.sessionID, `socketids.${types[type]}`, null)
+        sockets[type].delete(socket.id);
+    }
+    catch (err){
+        console.warn("Disconnect: Already open whilst loading");
+    }
 }
 
 async function emitnextsetup(socket){
@@ -37,7 +61,14 @@ async function nextsetup(socket){
 }
 
 
+function getpokersocket(socketID){
+    return poker_sockets.get(socketID);
+}
+
 module.exports = {
     getpath,
-    nextsetup
+    nextsetup,
+    anysocketconnect,
+    anysocketdisconnect,
+    getpokersocket
 }

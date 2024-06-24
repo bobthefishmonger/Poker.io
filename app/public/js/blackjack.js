@@ -1,3 +1,8 @@
+socket.on("nextsetup", (callback)=>{
+    blackjack_socket = io("/blackjack");
+    callback();
+});
+
 window.onload = ()=>{
     setCSStheme("blackjack");
 }

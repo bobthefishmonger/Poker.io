@@ -15,6 +15,7 @@ const storage = multer.diskStorage({
         cb(null, req.session.AccountInfo.AccountID + path.extname(file.originalname));
     }
 });
+
 const upload = multer({ storage: storage, fileFilter: (req, file, cb) => {
         if (!file.mimetype.startsWith("image/")) {
             return cb(new Error("Not image"), false);
@@ -28,7 +29,7 @@ function sendhtml(res, file) {
 };
 
 router.get("/", (req, res) => {
-    if (!req.session.AccountInfo?.LoggedIn){
+    if (!req.session.AccountInfo.LoggedIn){
         req.session.redirectNote = "Cannot access account while not logged in"
         res.redirect("/account/login");
     }else{
@@ -47,21 +48,26 @@ router.get("/login", (req,res) => {
 });
 
 router.post("/login", async (req, res) => {
-    let { username, password, stayLoggedIn} = req.body;
-    const sessionInfo = req.session.SessionInfo;
-    if (stayLoggedIn){
-        stayLoggedIn = 1
+    if (req.session.AccountInfo.LoggedIn){
+        req.session.redirectNote = "Already logged in"
+        res.redirect("/account");
     }else{
-        stayLoggedIn = 0
-    }
-    try {
-        await accounts.logInUser(req, sessionInfo, username, password, stayLoggedIn);
-        res.json({ success: true, redirect: req.session.redirect || "/"});
-    } catch (error) {
-        if (error.message){
-            res.json({ success: false, message: error.message });            
+        let { username, password, stayLoggedIn} = req.body;
+        const sessionInfo = req.session.SessionInfo;
+        if (stayLoggedIn){
+            stayLoggedIn = 1
         }else{
-            res.json({ success: false, message: error });
+            stayLoggedIn = 0
+        }
+        try {
+            await accounts.logInUser(req, sessionInfo, username, password, stayLoggedIn);
+            res.json({ success: true, redirect: req.session.redirect || "/"});
+        } catch (error) {
+            if (error.message){
+                res.json({ success: false, message: error.message });            
+            }else{
+                res.json({ success: false, message: error });
+            }
         }
     }
 });
@@ -77,35 +83,45 @@ router.get("/signup", (req, res) => {
 });
 
 router.post("/signup", async (req, res) => {
-    let { username, password, stayLoggedIn, theme, imagePath } = req.body;
-    const ip = req.ip;
-    const sessionInfo = req.session.SessionInfo;
-    if (stayLoggedIn){
-        stayLoggedIn = 1
+    if (req.session.AccountInfo.LoggedIn){
+        req.session.redirectNote = "Already logged in"
+        res.redirect("/account");
     }else{
-        stayLoggedIn = 0
-    }
-    try {
-        await accounts.signUpUser(req, sessionInfo, username, password, ip, stayLoggedIn, theme, imagePath);
-        res.json({ success: true, redirect: req.session.redirect });
-    } catch (error) {
-        if (error.message){
-            res.json({ success: false, message: error.message });            
+        let { username, password, stayLoggedIn, theme, imagePath } = req.body;
+        const ip = req.ip;
+        const sessionInfo = req.session.SessionInfo;
+        if (stayLoggedIn){
+            stayLoggedIn = 1
         }else{
-            res.json({ success: false, message: error });
+            stayLoggedIn = 0
+        }
+        try {
+            await accounts.signUpUser(req, sessionInfo, username, password, ip, stayLoggedIn, theme, imagePath);
+            res.json({ success: true, redirect: req.session.redirect });
+        } catch (error) {
+            if (error.message){
+                res.json({ success: false, message: error.message });            
+            }else{
+                res.json({ success: false, message: error });
+            }
         }
     }
 });
 
 router.post("/logout", (req, res) => {
-    try{
-        req.session.AccountInfo = {LoggedIn: false};    
-        req.session.SessionInfo = cookies.resetSessionInfoCookie(res, req);
-        res.clearCookie("DisplayInformation");
-        res.json({"success": true, "redirect": "/home"})
-    }
-    catch{
-        res.json({"success": false})
+    if (req.session.ingame){
+        req.session.redirectNote = "You cannot log out whilst in a game";
+        res.redirect("/home");
+    }else{
+        try{
+            req.session.AccountInfo = {LoggedIn: false};    
+            req.session.SessionInfo = cookies.resetSessionInfoCookie(res, req);
+            res.clearCookie("DisplayInformation");
+            res.json({"success": true, "redirect": "/home"})
+        }
+        catch{
+            res.json({"success": false})
+        }
     }
 });
 

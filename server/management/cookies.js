@@ -30,7 +30,7 @@ function decrypt(text) {
 //SessionInfo cookie
 function createSessionInfoCookieData(days){
     let data  = {
-        SessionID: crypto.randomUUID(),
+        DBsessionID: crypto.randomUUID(),
         Expirery: createCookieExpiry(days).toISOString()
     }
     data = encrypt(JSON.stringify(data));
@@ -59,10 +59,10 @@ async function validateSessionInfocookie(req, res){
             decryptedSessionInfo = JSON.parse(decrypt(req.cookies["SessionInfo"]));
             const valid = await db.checkSessionInfo(decryptedSessionInfo)
             if (valid){
-                const oldSessionID = decryptedSessionInfo.SessionID;
+                const oldDBsessionID = decryptedSessionInfo.DBsessionID;
                 SessionInfo = resetSessionInfoCookie(res);
                 try{
-                    db.updateSessionInfo(oldSessionID, SessionInfo);
+                    db.updateSessionInfo(oldDBsessionID, SessionInfo);
                     ShouldLogIn = [true, valid]
                 }
                 catch{

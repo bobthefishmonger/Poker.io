@@ -11,6 +11,10 @@
 <body>
     <p>This is a poker game</p>
     <p id="testmsg"></p>
+    <table id="roomplayers"></table>
+    <div>
+        <button id="startgamebtn" disabled="true">Start game</button>
+    </div>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();

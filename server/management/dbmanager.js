@@ -76,7 +76,7 @@ async function createPreferencesData(db, lastID, Theme, ImagePath) {
 
 async function createSessionData(db, SessionInfo, lastID, Stayloggedin) {
     return new Promise((resolve, reject) => {
-        db.run(`INSERT INTO tblSession(SessionID, AccountID, Stayloggedin, ExpireryDate) VALUES(?,?,?,?)`, [SessionInfo.SessionID, lastID, Stayloggedin, SessionInfo.Expirery], function (err) {
+        db.run(`INSERT INTO tblSession(sessionID, AccountID, Stayloggedin, ExpireryDate) VALUES(?,?,?,?)`, [SessionInfo.DBsessionID, lastID, Stayloggedin, SessionInfo.Expirery], function (err) {
             if (err) {
                 reject(err.message);
             } else {
@@ -187,8 +187,8 @@ async function updateSessionTable(AccountID, SessionInfo, Stayloggedin){
         const db = dbconnection();
         db.run(
             `UPDATE tblSession
-            SET SessionID=?, ExpireryDate=?, Stayloggedin=?
-            WHERE AccountID=?`, [SessionInfo.SessionID, SessionInfo.Expirery, Stayloggedin, AccountID], (err) => {
+            SET sessionID=?, ExpireryDate=?, Stayloggedin=?
+            WHERE AccountID=?`, [SessionInfo.DBsessionID, SessionInfo.Expirery, Stayloggedin, AccountID], (err) => {
                 if (err){
                     reject(err.message);
                 }else{
@@ -227,7 +227,7 @@ async function checkSessionInfo(SessionInfo){
         db.get(
             `SELECT AccountID
             FROM tblSession
-            WHERE SessionID = ? AND ExpireryDate = ? AND Stayloggedin = 1`, [SessionInfo.SessionID, SessionInfo.Expirery],
+            WHERE sessionID = ? AND ExpireryDate = ? AND Stayloggedin = 1`, [SessionInfo.DBsessionID, SessionInfo.Expirery],
             (err, row) =>{
         if (err){
             console.error(err.message); reject(err.message);
@@ -239,14 +239,14 @@ async function checkSessionInfo(SessionInfo){
     })
 }
 
-async function updateSessionInfo(oldSessionID, SessionInfo) {
+async function updateSessionInfo(oldDBsessionID, SessionInfo) {
     return new Promise((resolve, reject) => {
         const db = dbconnection();
         db.run(
             `UPDATE tblSession
-            SET SessionID=?, ExpireryDate=?
-            WHERE SessionID=?`,
-            [SessionInfo.SessionID,SessionInfo.Expirery, oldSessionID],
+            SET sessionID=?, ExpireryDate=?
+            WHERE sessionID=?`,
+            [SessionInfo.DBsessionID,SessionInfo.Expirery, oldDBsessionID],
             (err) => {
                 if (err) {
                     reject(err.message);

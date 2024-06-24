@@ -40,9 +40,16 @@
         <p id="errormsg"></p>
     </div>
     <div>
-        <button id="showroomsbtn">Show Public Rooms</button>
+        <button id="showroomsbtn">Refresh RoomList</button>
         <table id="publicrooms">
         </table>
+    </div>
+    <div>
+        <p>Or Join a privategame</p>
+        <form onsubmit="joinprivroom(event)">
+            <input id="privroomIDinput" placeholder="roomID:" >
+            <button>Submit</button>
+        </form>
     </div>
 </body>
 <script src="/socket.io/socket.io.js"></script>

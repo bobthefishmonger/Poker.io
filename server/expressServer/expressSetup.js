@@ -28,6 +28,14 @@ const setsessioninfo = async (req, res, next)=>{
     if (!req.session.AccountInfo){
         await accounts.logInAuto(req, res);
     }
+    if (!req.session.socketids){
+        req.session.socketids = {
+            poker_socket: null,
+            blackjack_socket: null,
+            roulette_socket: null,
+            socket: null
+        }
+    }
     next();
 }
 const setDisplayInformation = async (req, res, next)=>{
@@ -46,7 +54,7 @@ function expressSetup(express, app){
     app.use("/", homerouter);
     app.use("/games", gamesrouter);
     app.use("/account", accountrouter);
-    app.all("*", (req,res) => {
+    app.use("*", (req,res) => {
         res.redirect("/404error");
     });
     return sessionmiddleware;

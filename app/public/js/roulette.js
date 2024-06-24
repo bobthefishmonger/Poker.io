@@ -1,3 +1,8 @@
+socket.on("nextsetup", (callback)=>{
+    roulette_socket = io("/roulette");
+    callback();
+});
+
 window.onload = ()=>{
     setCSStheme("roulette");
 }

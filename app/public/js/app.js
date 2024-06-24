@@ -8,6 +8,9 @@ socket.on("Redirect Note", (message) => {
     //  setTimeOut(notificaiton.visibility = hidden;, 3);
     // }
 })
+socket.on("refresh", ()=>{
+    window.location.href = window.location.href;
+});
 
 function setCSStheme(name){
     const theme = getDisplayInformation()?.theme || "Default";

@@ -56,17 +56,28 @@ const RedisJsonDel = RedisClient.json.del.bind(RedisClient.json);
 
 const store = new RedisJsonStore({client: RedisClient});
 
-async function getSession(sessionID) {
+async function getSession(sessionID){
     return await RedisJsonGet(`sess:${sessionID}`);
 };
 
-async function updateSession(sessionID, data) {
-    await RedisJsonSet(`sess:${sessionID}`, '.', data);
+async function updateSession(sessionID, data){
+    await RedisJsonSet(`sess:${sessionID}`, ".", data);
 };
+
+async function setSession(sessionID, key, data){
+    await RedisJsonSet(`sess:${sessionID}`, `.${key}`, data);
+}
+
+async function setSessiondouble(sessionID, keys, data){
+    await RedisJsonSet(`sess:${sessionID}`, `.${keys[0]}`, data[0]);
+    await RedisJsonSet(`sess:${sessionID}`, `.${keys[1]}`, data[1]);
+}
+//beyond 2 it becomes more efficient to update the sessions
 
 module.exports = {
     store,
-    RedisClient,
     getSession,
-    updateSession
+    updateSession,
+    setSession,
+    setSessiondouble
 };
