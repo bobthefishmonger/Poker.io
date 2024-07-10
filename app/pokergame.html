@@ -9,17 +9,23 @@
     <link rel="stylesheet" id="pokergamecsslink" href="../../../css/Default/pokergame.css">
 </head>
 <body>
+    <div class="header">
     <p>This is a poker game</p>
-    <p id="testmsg"></p>
-    <table id="roomplayers"></table>
-    <div>
-        <button id="startgamebtn" disabled="true">Start game</button>
     </div>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const socket = io();
-    </script>
-    <script src="../../../js/app.js"></script>
-    <script src="../../../js/pokergame.js"></script>
+    <div id="content">
+        <p id="testmsg"></p>
+        <table id="roomplayers"></table>
+        <div>
+            <button class="testbtn startgamebtn" id="startgamebtn" disabled="true">Start game</button>
+        </div>
+        <div class="cardscontainer"></div>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            const socket = io();
+        </script>
+        <script src="../../../js/app.js"></script>
+        <script src="../../../js/pokergame.js"></script>
+        <script src="../../../js/pokergamesetup.js"></script>
+    </div>
 </body>
 </html>

@@ -1,6 +1,6 @@
-window.onload = ()=>{
-    setCSStheme("gamelist");
-}
-window.addEventListener("beforeunload", ()=>{
-    socket.disconnect(true);
+window.onload = () => {
+	setCSStheme("gamelist");
+};
+window.addEventListener("beforeunload", () => {
+	socket.disconnect(true);
 });

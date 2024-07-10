@@ -1,6 +1,6 @@
-window.onload = ()=>{
-    setCSStheme("leaderboard");
-}
-window.addEventListener("beforeunload", ()=>{
-    socket.disconnect(true);
+window.onload = () => {
+	setCSStheme("leaderboard");
+};
+window.addEventListener("beforeunload", () => {
+	socket.disconnect(true);
 });

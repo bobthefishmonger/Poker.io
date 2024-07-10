@@ -1,20 +1,25 @@
-*{
-    margin: 0px;
-    padding: 0px;
+* {
+	margin: 0px;
+	padding: 0px;
+}
+[class*="test"] {
+	background-color: yellow;
+	color: black;
+	border: red 2px dashed;
 }
 
-body{
-    background-color: var(--body_background_colour);
-    color: var(--body_colour);
+body {
+	background-color: var(--body_background_colour);
+	color: var(--body_colour);
 }
 
-.content{
-    height: calc(100vh - --header_height);
-    width: 100vw;
+.content {
+	height: calc(100vh - --header_height);
+	width: 100vw;
 }
 a {
-    background-color: white;
-    color: blue;
+	background-color: white;
+	color: blue;
 }
 /* .header {
     position: fixed;
@@ -49,10 +54,9 @@ body{
     justify-content: space-around;
 } */
 
-:root{
-    --body_colour: white;
-    --body_background_colour: rgb(33,33,33);
-    --header_background_colour: rgb(66,66,66);
-    --header_height: 50px;
+:root {
+	--body_colour: white;
+	--body_background_colour: rgb(33, 33, 33);
+	--header_background_colour: rgb(66, 66, 66);
+	--header_height: 50px;
 }
-

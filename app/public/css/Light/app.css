@@ -3,6 +3,12 @@
     padding: 0px;
 }
 
+[class*="test"]{
+    background-color: yellow;
+    color: black;
+    border: red 2px dashed;   
+}
+
 body{
     background-color: var(--body_background_colour);
     color: var(--body_colour);
