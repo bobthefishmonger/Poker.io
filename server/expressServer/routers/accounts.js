@@ -6,6 +6,7 @@ const multer = require("multer");
 const cookies = require("../../management/cookies.js");
 const db = require("../../management/dbmanager.js");
 const fs = require("fs");
+const RedisClient = require("../redis.js");
 
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
@@ -128,7 +129,7 @@ router.post("/signup", async (req, res) => {
 	}
 });
 
-router.post("/logout", (req, res) => {
+router.post("/logout", async (req, res) => {
 	if (req.session.ingame) {
 		req.session.redirectNote = "You cannot log out whilst in a game";
 		res.redirect("/home");
@@ -137,6 +138,7 @@ router.post("/logout", (req, res) => {
 			req.session.AccountInfo = { LoggedIn: false };
 			req.session.SessionInfo = cookies.resetSessionInfoCookie(res, req);
 			res.clearCookie("DisplayInformation");
+			await RedisClient.setSession(req.sessionID, "ingame", false);
 			res.json({ success: true, redirect: "/home" });
 		} catch {
 			res.json({ success: false });

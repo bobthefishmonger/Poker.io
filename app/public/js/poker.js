@@ -7,7 +7,7 @@ async function joinprivroom(e) {
 	e.preventDefault();
 	window.location.href =
 		window.location.origin +
-		`/games/poker/${document.getElementById("privroomIDinput").value}`;
+		`/games/poker/${document.getElementById("privroomIDinput").value}/`;
 }
 
 async function getpublicrooms() {

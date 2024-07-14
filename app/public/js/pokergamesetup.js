@@ -123,7 +123,7 @@ socket.on("nextsetup", (callback) => {
 	callback();
 
 	poker_socket.on("connect", async () => {
-		const data = { roomID: window.location.href.slice(-6) };
+		const data = { roomID: window.location.href.slice(0, -1).slice(-6) };
 		let response = await fetch("/games/poker/joinroom", {
 			method: "POST",
 			headers: {

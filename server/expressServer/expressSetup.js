@@ -23,6 +23,14 @@ const sessionmiddleware = session({
 	saveUninitialized: true
 });
 
+const changeurl = (req, res, next) => {
+	if (req.url.at(-1) !== "/" && req.method === "GET") {
+		res.redirect(`${req.url}/`);
+	} else {
+		next();
+	}
+};
+
 const changeip = (req, res, next) => {
 	let ip = req.ip;
 	if (ip.startsWith("::ffff:")) {
@@ -55,7 +63,7 @@ const setDisplayInformation = async (req, res, next) => {
 };
 
 const setonline = (req, res, next) => {
-	req.session.isOnline = true;
+	if (req.session.AccountInfo.LoggedIn) req.session.isOnline = true;
 	next();
 };
 
@@ -63,8 +71,9 @@ function expressSetup(express, app) {
 	app.use(nocache());
 	app.use(express.static(path.join(__dirname, "..", "..", "app", "public")));
 	app.use("/uploads", uploadrouter);
-	app.use(sessionmiddleware);
+	app.use(changeurl);
 	app.use(changeip);
+	app.use(sessionmiddleware);
 	app.use(cookieParser());
 	app.use(setsessioninfo);
 	app.use(setDisplayInformation);

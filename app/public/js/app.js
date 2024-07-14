@@ -16,10 +16,10 @@ function setCSStheme(name) {
 	const theme = getDisplayInformation()?.theme || "Default";
 	document
 		.getElementById("appcsslink")
-		.setAttribute("href", `../../css/${theme}/app.css`);
+		.setAttribute("href", `../../../css/${theme}/app.css`);
 	document
 		.getElementById(`${name}csslink`)
-		.setAttribute("href", `../../css/${theme}/${name}.css`);
+		.setAttribute("href", `../../../css/${theme}/${name}.css`);
 }
 
 function getDisplayInformation() {

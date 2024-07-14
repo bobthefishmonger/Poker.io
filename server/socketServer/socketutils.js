@@ -14,7 +14,11 @@ const sockets = [
 const types = ["poker_socket", "blackjack_socket", "roulette_socket", "socket"];
 
 function getpath(socket) {
-	return socket.request.headers.referer.split(socket.request.headers.host)[1];
+	let url = socket.request.headers.referer.split(
+		socket.request.headers.host
+	)[1];
+	url = url.slice(0, -1);
+	return url;
 }
 
 async function anysocketconnect(socket, type) {
@@ -64,11 +68,7 @@ async function emitnextsetup(socket) {
 
 async function nextsetup(socket) {
 	const path = getpath(socket);
-	if (
-		path.slice(0, 6) === "/games" &&
-		path !== "/games/" &&
-		path !== "/games"
-	) {
+	if (path.slice(0, 6) === "/games" && path !== "/games") {
 		try {
 			await emitnextsetup(socket);
 		} catch {
