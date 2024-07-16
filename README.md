@@ -3,7 +3,9 @@
 A site that contains Poker, Blackjack, Roulette.
 Made using express-js and Socket io
 
- SQL for table creation   
+## To Use
+
+SQL for table creation
 
     CREATE TABLE "tblAccounts" (
         	"AccountID"	INTEGER,
@@ -11,7 +13,7 @@ Made using express-js and Socket io
         	"Password"	TEXT,
         	PRIMARY KEY("AccountID")
     );
-    
+
     CREATE TABLE "tblEarnings" (
         	"EarningsID"	INTEGER,
         	"AccountID"	INTEGER,
@@ -21,7 +23,7 @@ Made using express-js and Socket io
         	FOREIGN KEY("AccountID") REFERENCES "tblAccounts"("AccountID"),
         	PRIMARY KEY("EarningsID")
     );
-    
+
     CREATE TABLE "tblPreferences" (
     	"PreferenceID"	INTEGER,
     	"AccountID"	INTEGER,
@@ -47,5 +49,18 @@ Made using express-js and Socket io
     	PRIMARY KEY("IPID"),
     	FOREIGN KEY("AccountID") REFERENCES "tblAccounts"("AccountID")
     );
+
+A .env file is required:
+
+     SessionInfo_Enkey = 16byte (32 hex characters)
+     PORT = Portnumber
+     REDISPORT = Portnumber (redis default is 6379)
+
+Redisjson is required: I used docker redis-stack
+
+Database files should be constructed as shown:
+
+    /server/database/uploads/default.png
+    /server/database/accounts.db
 
 with thanks to http://suffe.cool/poker/evaluator.html for the poker evaluator theory
