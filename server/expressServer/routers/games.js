@@ -4,6 +4,8 @@ const router = express.Router();
 const poker_rooms = require("../../games/poker/rooms.js");
 const poker_game = require("../../games/poker/game.js");
 
+const RedisClient = require("../redis.js");
+
 function sendhtml(res, file) {
 	res.sendFile(path.join(__dirname, "..", "..", "..", "app", `${file}.html`));
 }
@@ -73,7 +75,7 @@ router.post("/poker/startgame", (req, res) => {
 	poker_game.startgame(req, res);
 });
 
-router.get("/poker/:roomID", (req, res) => {
+router.get("/poker/:roomID", async (req, res) => {
 	if (req.session.ingame) {
 		req.session.redirectNote = "You cannot access multiple games at once";
 		res.redirect("/home");

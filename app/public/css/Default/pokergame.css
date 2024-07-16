@@ -6,3 +6,21 @@
 .startgamebtn {
 	visibility: hidden;
 }
+
+.card {
+	height: 200px;
+	width: 100px;
+	background-image: url(../../assets/cardBackBlue.png);
+	background-position: center;
+	background-repeat: no-repeat;
+	padding-right: 10px;
+}
+
+.community-cards {
+	background-image: url(../../assets/cardBackRed.png);
+}
+
+[class*="cards-container"] {
+	display: flex;
+	flex-direction: row;
+}

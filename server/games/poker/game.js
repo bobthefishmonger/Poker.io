@@ -24,7 +24,7 @@ function startgame(req, res) {
 		res.json({ success: false, message: "The room is not full" });
 	} else {
 		res.json({ success: true });
-		PokerIO.to(room.roomID).emit("gamestarting");
+		PokerIO.to(room.roomID).emit("gamestarting", room.usernames);
 		setTimeout(async () => {
 			await game(room);
 		}, 1000);
@@ -43,16 +43,16 @@ function updateWinnings(room, winners) {
 }
 
 async function game(room) {
-	rounds.blinds(room);
-	rounds.betround(room);
-	rounds.dealflop(room);
-	rounds.betround(room);
-	rounds.dealturn(room);
-	rounds.betround(room);
-	rounds.dealriver(room);
-	rounds.betround(room);
-	const winners = rounds.winner(room);
-	updateWinnings(room, winners);
+	// rounds.blinds(room);
+	// rounds.betround(room);
+	// rounds.dealflop(room);
+	// rounds.betround(room);
+	// rounds.dealturn(room);
+	// rounds.betround(room);
+	// rounds.dealriver(room);
+	// rounds.betround(room);
+	// const winners = rounds.winner(room);
+	// updateWinnings(room, winners);
 }
 
 module.exports = {

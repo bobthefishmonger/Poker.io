@@ -114,10 +114,6 @@ function setplayertable(players) {
 	}
 }
 
-function genplayercards() {
-	const container = document.querySelector(".cardscontainer");
-}
-
 socket.on("nextsetup", (callback) => {
 	poker_socket = io("/poker");
 	callback();
@@ -156,9 +152,9 @@ socket.on("nextsetup", (callback) => {
 		window.location.href = window.location.origin + "/games/poker";
 	});
 
-	poker_socket.on("gamestarting", () => {
+	poker_socket.on("gamestarting", (players) => {
 		alert("game is starting");
-		rungame();
+		rungame(poker_socket, players);
 	});
 });
 
@@ -168,7 +164,9 @@ document.getElementById("startgamebtn").addEventListener("click", async () => {
 
 window.addEventListener("beforeunload", () => {
 	socket.disconnect(true);
-	poker_socket.disconnect(true);
+	if (poker_socket) {
+		poker_socket.disconnect(true);
+	}
 });
 
 window.onload = () => {

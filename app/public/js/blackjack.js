@@ -8,5 +8,7 @@ window.onload = () => {
 };
 window.addEventListener("beforeunload", () => {
 	socket.disconnect(true);
-	blackjack_socket.disconnect(true);
+	if (blackjack_socket) {
+		blackjack_socket.disconnect(true);
+	}
 });

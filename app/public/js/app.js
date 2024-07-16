@@ -9,7 +9,7 @@ socket.on("Redirect Note", (message) => {
 	// }
 });
 socket.on("refresh", () => {
-	window.location.href = window.location.href;
+	location.reload();
 });
 
 function setCSStheme(name) {

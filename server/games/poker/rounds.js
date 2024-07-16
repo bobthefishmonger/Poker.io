@@ -19,6 +19,7 @@ function dealplayercards(room) {
 		player.cards = cards;
 	});
 }
+
 function dealflop(room) {
 	const communityCards = [
 		room.deck.takenextcard(),
@@ -28,11 +29,13 @@ function dealflop(room) {
 	PokerIO.to(room.roomID).emit("Flop cards", communityCards);
 	room.communityCards = communityCards;
 }
+
 function dealturn(room) {
 	const nextcard = room.deck.takenextcard();
 	PokerIO.to(room.roomID).emit("Turn cards", nextcard);
 	room.communityCards.push(nextcard);
 }
+
 function dealriver(room) {
 	const nextcard = room.deck.takenextcard();
 	PokerIO.to(room.roomID).emit("River cards", nextcard);
@@ -58,7 +61,7 @@ function blinds(room) {
 	SBplayer.stack -= BlindSizes[room.stacksize][0];
 	BBplayer.stack -= BlindSizes[room.stacksize][1];
 	room.players.forEach((player) => {
-		player.socket.emit("stack", player.stack);
+		player.poker_socket.emit("stack", player.stack);
 	});
 }
 

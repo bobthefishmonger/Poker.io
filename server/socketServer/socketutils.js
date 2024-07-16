@@ -30,7 +30,6 @@ async function anysocketconnect(socket, type) {
 			socket.id
 		);
 	} catch {
-		console.warn("Already open whilst loading?");
 		socket.emit("refresh");
 	}
 	return socket.request.sessionID;
@@ -45,7 +44,7 @@ async function anysocketdisconnect(socket, type) {
 		);
 		sockets[type].delete(socket.id);
 	} catch (err) {
-		console.warn("Disconnect: Already open whilst loading");
+		console.error(err);
 	}
 }
 

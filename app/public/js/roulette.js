@@ -8,5 +8,7 @@ window.onload = () => {
 };
 window.addEventListener("beforeunload", () => {
 	socket.disconnect(true);
-	roulette_socket.disconnect(true);
+	if (roulette_socket) {
+		roulette_socket.disconnect(true);
+	}
 });

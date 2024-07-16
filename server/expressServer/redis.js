@@ -57,30 +57,44 @@ const RedisJsonGet = RedisClient.json.get.bind(RedisClient.json);
 const RedisJsonSet = RedisClient.json.set.bind(RedisClient.json);
 const RedisJsonDel = RedisClient.json.del.bind(RedisClient.json);
 
+const sessionWriting = new Map();
+
 const store = new RedisJsonStore({ client: RedisClient });
 
 async function getSession(sessionID) {
 	return await RedisJsonGet(`sess:${sessionID}`);
 }
 
+const changingsessions = new Map();
+
 async function updateSession(sessionID, data) {
+	changingsessions.set(sessionID, 1);
 	await RedisJsonSet(`sess:${sessionID}`, ".", data);
+	changingsessions.delete(sessionID);
 }
 
 async function setSession(sessionID, key, data) {
+	// console.warn(`Started: ${key} -> ${data}`);
+	changingsessions.set(sessionID, 1);
 	await RedisJsonSet(`sess:${sessionID}`, `.${key}`, data);
+	changingsessions.delete(sessionID);
+	// console.log(`Finished: ${key} -> ${data}`);
 }
 
 async function setSessiondouble(sessionID, keys, data) {
+	// console.warn(`Started: ${keys} -> ${data}`);
+	changingsessions.set(sessionID, 1);
 	await RedisJsonSet(`sess:${sessionID}`, `.${keys[0]}`, data[0]);
 	await RedisJsonSet(`sess:${sessionID}`, `.${keys[1]}`, data[1]);
+	changingsessions.delete(sessionID);
+	// console.log(`Finished: ${keys} -> ${data}`);
 }
-//beyond 2 it becomes more efficient to update the sessions
 
 module.exports = {
 	store,
 	getSession,
 	updateSession,
 	setSession,
-	setSessiondouble
+	setSessiondouble,
+	changingsessions
 };

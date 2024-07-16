@@ -43,6 +43,26 @@ const changeip = (req, res, next) => {
 	next();
 };
 
+const awaitchanges = (req, res, next) => {
+	let interval = setInterval(() => {
+		if (!RedisClient.changingsessions.get(req.sessionID)) {
+			clearInterval(interval);
+			clearTimeout(timeout);
+			return req.session.reload(() => {
+				next();
+			});
+		}
+	}, 2);
+
+	let timeout = setTimeout(() => {
+		clearInterval(interval);
+		console.warn("Request timed out.");
+		const timeouterror = new Error("Timed Out Request");
+		timeouterror.status = 408;
+		next(timeouterror);
+	}, 500);
+};
+
 const setsessioninfo = async (req, res, next) => {
 	if (!req.session.AccountInfo) {
 		await accounts.logInAuto(req, res);
@@ -57,12 +77,13 @@ const setsessioninfo = async (req, res, next) => {
 	}
 	next();
 };
+
 const setDisplayInformation = async (req, res, next) => {
 	cookies.createDisplayInformationCookie(req, res);
 	next();
 };
 
-const setonline = (req, res, next) => {
+const setonline = async (req, res, next) => {
 	if (req.session.AccountInfo.LoggedIn) req.session.isOnline = true;
 	next();
 };
@@ -74,6 +95,7 @@ function expressSetup(express, app) {
 	app.use(changeurl);
 	app.use(changeip);
 	app.use(sessionmiddleware);
+	app.use(awaitchanges);
 	app.use(cookieParser());
 	app.use(setsessioninfo);
 	app.use(setDisplayInformation);
@@ -82,7 +104,7 @@ function expressSetup(express, app) {
 	app.use("/", homerouter);
 	app.use("/games", gamesrouter);
 	app.use("/account", accountrouter);
-	app.use("*", (req, res) => {
+	app.get("*", (req, res) => {
 		res.redirect("/404error");
 	});
 	return sessionmiddleware;
