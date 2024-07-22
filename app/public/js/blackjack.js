@@ -1,5 +1,6 @@
+let blackjack_socket;
 socket.on("nextsetup", (callback) => {
-	blackjack_socket = io("/blackjack");
+	blackjack_socket = io("/blackjack", { reconnection: false });
 	callback();
 });
 

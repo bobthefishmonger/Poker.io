@@ -11,13 +11,17 @@ const uploadrouter = require("./routers/uploads.js");
 const accounts = require("../management/accounts.js");
 const cookies = require("../management/cookies.js");
 
-const RedisClient = require("./redis.js");
-
+const RedisClient = require("redisjson-express-session-store");
 const crypto = require("crypto");
 const path = require("path");
+require("dotenv").config();
+
+RedisClient.setClient(null, {
+	url: `redis://localhost:${process.env.REDISPORT}`
+});
 
 const sessionmiddleware = session({
-	store: RedisClient.store,
+	store: RedisClient.createJSONStore(),
 	secret: crypto.randomBytes(32).toString("hex"),
 	resave: false,
 	saveUninitialized: true
@@ -43,24 +47,18 @@ const changeip = (req, res, next) => {
 	next();
 };
 
-const awaitchanges = (req, res, next) => {
-	let interval = setInterval(() => {
-		if (!RedisClient.changingsessions.get(req.sessionID)) {
-			clearInterval(interval);
-			clearTimeout(timeout);
-			return req.session.reload(() => {
-				next();
-			});
-		}
-	}, 2);
-
-	let timeout = setTimeout(() => {
-		clearInterval(interval);
+const awaitchanges = async (req, res, next) => {
+	try {
+		await RedisClient.inactiveSession(req.session);
+		req.session.reload(() => {
+			next();
+		});
+	} catch {
 		console.warn("Request timed out.");
 		const timeouterror = new Error("Timed Out Request");
 		timeouterror.status = 408;
 		next(timeouterror);
-	}, 500);
+	}
 };
 
 const setsessioninfo = async (req, res, next) => {
@@ -84,7 +82,9 @@ const setDisplayInformation = async (req, res, next) => {
 };
 
 const setonline = async (req, res, next) => {
-	if (req.session.AccountInfo.LoggedIn) req.session.isOnline = true;
+	try {
+		if (req.session.AccountInfo.LoggedIn) req.session.isOnline = true;
+	} catch {}
 	next();
 };
 

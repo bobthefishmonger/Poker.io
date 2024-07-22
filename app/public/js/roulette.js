@@ -1,5 +1,6 @@
+let roulette_socket;
 socket.on("nextsetup", (callback) => {
-	roulette_socket = io("/roulette");
+	roulette_socket = io("/roulette", { reconnection: false });
 	callback();
 });
 

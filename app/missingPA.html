@@ -11,6 +11,10 @@
     <p>This is not a valid account</p>
     <a href="/home">Go Home</a>
 </body>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket = io({reconnection: false });
+</script>
 <script src="../../js/app.js"></script>
 <script src="../../js/missingPA.js"></script>
 </html>

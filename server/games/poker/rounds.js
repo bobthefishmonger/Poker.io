@@ -1,6 +1,5 @@
-const eval = require("./evaluator.js");
-
-let PokerIO;
+const eval = require("poker-eval");
+const TIMEOUTLENGTH = 120_000;
 
 const BlindSizes = {
 	2500: [10, 25],
@@ -8,15 +7,19 @@ const BlindSizes = {
 	10000: [50, 100]
 };
 
+let PokerIO;
+
 function setPokerIO(IO) {
 	PokerIO = IO;
 }
 
 function dealplayercards(room) {
+	let i = 1;
 	room.players.forEach((player) => {
 		const cards = [room.deck.takenextcard(), room.deck.takenextcard()];
-		player.poker_socket.emit("Player Cards", cards);
+		player.poker_socket.emit("Player Cards", cards, i);
 		player.cards = cards;
+		i++;
 	});
 }
 
@@ -32,84 +35,255 @@ function dealflop(room) {
 
 function dealturn(room) {
 	const nextcard = room.deck.takenextcard();
-	PokerIO.to(room.roomID).emit("Turn cards", nextcard);
+	PokerIO.to(room.roomID).emit("Turn card", nextcard);
 	room.communityCards.push(nextcard);
 }
 
 function dealriver(room) {
 	const nextcard = room.deck.takenextcard();
-	PokerIO.to(room.roomID).emit("River cards", nextcard);
+	PokerIO.to(room.roomID).emit("River card", nextcard);
 	room.communityCards.push(nextcard);
+}
+function moveplayers(room) {
+	let offset = room.gamesplayed;
+	while (offset >= room.usernames.length) {
+		offset -= room.usernames.length;
+	}
+	const newPlayers = new Map();
+	const newusernames = [
+		...room.usernames.slice(offset),
+		...room.usernames.slice(0, offset)
+	];
+	newusernames.forEach((username) => {
+		newPlayers.set(username, room.players.get(username));
+	});
+	return [newPlayers, newusernames];
 }
 
 function blinds(room) {
-	let SBindex = 0 + room.gamesplayed;
-	while (SBindex > room.usernames.length) {
-		SBindex -= room.usernames.length;
-	}
-	let BBindex = 1 + room.gamesplayed;
-	while (BBindex > room.usernames.length) {
-		BBindex -= room.usernames.length;
-	}
+	const SBindex = 0;
+	const BBindex = 1;
 	const SBname = room.usernames[SBindex];
 	const BBname = room.usernames[BBindex];
 	const SBplayer = room.players.get(SBname);
 	const BBplayer = room.players.get(BBname);
 	SBplayer.poker_socket.emit("smallblind", BlindSizes[room.stacksize][0]);
 	BBplayer.poker_socket.emit("bigblind", BlindSizes[room.stacksize][1]);
+	room.Bigblind = BlindSizes[room.stacksize][1];
 	PokerIO.to(room.roomID).emit("blinds", [SBname, BBname]);
 	SBplayer.stack -= BlindSizes[room.stacksize][0];
+	SBplayer.amountbet += BlindSizes[room.stacksize][0];
 	BBplayer.stack -= BlindSizes[room.stacksize][1];
+	BBplayer.amountbet += BlindSizes[room.stacksize][1];
 	room.players.forEach((player) => {
 		player.poker_socket.emit("stack", player.stack);
 	});
+	room.pot += BlindSizes[room.stacksize][0] + BlindSizes[room.stacksize][1];
 }
 
-function playertimedout(player) {
-	player.poker_socket.emit("Timeout");
-	//active disconnect
-}
-
-function betround(room) {}
-
-function validateDecision(room, player, decision) {}
-
-function getPlayerDecision(room, player) {
-	return new Promise((resolve, reject) => {
-		player.poker_socket.emit("Players Turn", [options], (decision) => {
-			try {
-				validateDecision(room, player, decision);
-				clearTimeout(timeoutplayer);
-				resolve(choice);
-			} catch {
-				player.poker_socket.emit("Invalid Choice");
+async function betround(room) {
+	room.callAmount = room.Bigblind;
+	room.cancheck = true;
+	room.roundover = false;
+	room.firstbetplayer = true;
+	room.playerbets = new Map();
+	room.players.forEach((player, username) => {
+		room.playerbets.set(username, 0);
+	});
+	if (
+		room.foldedplayers.size + room.allinplayers.size + 1 ===
+		room.players.size
+	) {
+		return;
+	}
+	while (!room.roundover) {
+		for (const [username, player] of room.players) {
+			const callAmount = room.callAmount - room.playerbets.get(username);
+			room.playergo = username;
+			if (
+				room.foldedplayers.get(username) ||
+				room.allinplayers.get(username)
+			) {
+				return;
 			}
-		});
+			if (room.foldedplayers.size === room.players.size - 1) {
+				room.roundover = true;
+				return;
+			}
+			if (callAmount <= 0) {
+				if (islastplayer(room, player)) room.roundover = true;
+				return;
+			}
+			const options = ["Fold", "All-in"];
+			if (room.cancheck) {
+				options.push("Check");
+				if (callAmount < player.stack) {
+					options.push("Raise");
+				}
+			} else if (callAmount < player.stack) {
+				options.push("Call", "Raise");
+			}
+			let choice;
+			try {
+				choice = await getPlayerDecision(
+					room,
+					player,
+					room.firstbetplayer,
+					options,
+					callAmount,
+					player.stack
+				);
+			} catch (err) {
+				choice = ["Fold"];
+				player.poker_socket.emit("error", err.message || err);
+			}
+			PokerIO.to(room.roomID).emit(
+				"Player Go",
+				username,
+				choice,
+				room.firstbetplayer
+			);
+			try {
+				handlechoice(room, player, choice, callAmount);
+			} catch (err) {}
+			player.poker_socket.emit("Stack change", player.stack);
+		}
+	}
+}
+
+async function getPlayerDecision(
+	room,
+	player,
+	firstbetplayer,
+	options,
+	callAmount,
+	stacksize
+) {
+	return new Promise((resolve, reject) => {
+		player.poker_socket.emit(
+			"Players Turn",
+			options,
+			firstbetplayer,
+			callAmount,
+			stacksize,
+			(decision) => {
+				try {
+					if (
+						!decision ||
+						!decision[0] ||
+						!options.includes(decision[0]) ||
+						(decision[0] === "Raise" &&
+							(isNaN(decision[1]) ||
+								Number(decision[1]) >= player.stack ||
+								(Number(decision[1] <= callAmount) &&
+									!firstbetplayer))) ||
+						Number(decision[1] < callAmount)
+					) {
+						throw Error("Invalid Choice");
+					}
+					if (room.playergo !== player.username)
+						throw Error("It is not your go");
+					clearTimeout(timeoutplayer);
+					resolve(decision);
+					player.poker_socket.emit("finished go", null);
+				} catch (err) {
+					player.poker_socket.emit("finished go", err.message || err);
+					getPlayerDecision(
+						room,
+						player,
+						firstbetplayer,
+						options,
+						callAmount,
+						stacksize
+					)
+						.then(resolve)
+						.catch(reject);
+				}
+			}
+		);
 		const timeoutplayer = setTimeout(() => {
-			player.poker_socket.emit("timed out");
-			playertimedout(player);
 			reject("timed out");
 		}, TIMEOUTLENGTH);
 	});
 }
 
+function handlechoice(room, player, choice, callAmount) {
+	if (choice[0] === "Fold") {
+		room.foldedplayers.set(player.username, player);
+	} else if (choice[0] === "All-in") {
+		room.allinplayers.set(player.username, player);
+		room.cancheck = false;
+		if (callAmount >= player.stack) {
+			if (islastplayer(room, player)) {
+				room.roundover = true;
+			}
+		} else {
+			room.callAmount = Math.max(room.callAmount, player.stack);
+		}
+		room.pot += player.stack;
+		player.amountbet += player.stack;
+		player.stack = 0;
+		room.playerbets.set(
+			player.username,
+			room.playerbets.get(player.username) + stack
+		);
+	} else if (choice[0] === "Call") {
+		player.stack -= callAmount;
+		room.pot += callAmount;
+		player.amountbet += callAmount;
+		room.playerbets.set(
+			player.username,
+			room.playerbets.get(player.username) + callAmount
+		);
+	} else if (choice[0] === "Raise") {
+		choice[1] = Number(choice[1]);
+		player.stack -= choice[1];
+		room.pot += choice[1];
+		room.callAmount = room.playerbets.get(player.username) + choice[1];
+		room.cancheck = false;
+		room.firstbetplayer = false;
+		room.playerbets.set(
+			player.username,
+			room.playerbets.get(player.username) + choice[1]
+		);
+	} else {
+		if (islastplayer(room, player)) {
+			room.roundover = true;
+		}
+	}
+}
+
+function islastplayer(room, player) {
+	const activeusernames = room.usernames.filter((username) => {
+		return (
+			!room.foldedplayers.get(username) ||
+			!room.allinplayers.get(username)
+		);
+	});
+	return player.username === activeusernames[activeusernames.length - 1];
+}
+
 function winner(room) {
-	let minscore = 10000;
+	let minscore = Infinity;
 	let winners = [];
-	for (const player of room.activeplayers) {
+	room.players.forEach((player, username) => {
+		player.cards.push(...room.communityCards);
+		if (room.foldedplayers.get(username)) return;
 		player.score = eval.evaluate7cards(player.cards);
 		if (player.score < minscore) {
 			winners = [player.username];
 			minscore = player.score;
 		} else if (player.score === minscore) {
-			winners.push(player);
+			winners.push(username);
 		}
-	}
+	});
 	return winners;
 }
 
 module.exports = {
 	setPokerIO,
+	moveplayers,
+	dealplayercards,
 	dealflop,
 	dealturn,
 	dealriver,

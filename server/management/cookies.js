@@ -86,7 +86,6 @@ async function validateSessionInfocookie(req, res) {
 				SessionInfo = resetSessionInfoCookie(res);
 			}
 		} catch (err) {
-			console.error("Invalid cookie format");
 			SessionInfo = resetSessionInfoCookie(res);
 		}
 	} else {

@@ -3,7 +3,7 @@ async function logout(event) {
 	let response = await fetch("/account/logout", { method: "POST" });
 	response = await response.json();
 	if (response.success) {
-		window.location.href = window.location.origin + response.redirect;
+		window.location.pathname = response.redirect;
 	} else {
 		document.getElementById("errormsg").innerHTML = "An Error occured";
 	}

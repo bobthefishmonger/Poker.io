@@ -1,6 +1,5 @@
 const socketutils = require("../../socketServer/socketutils.js");
-const RedisClient = require("../../expressServer/redis.js");
-const players = require("./players.js");
+const RedisClient = require("redisjson-express-session-store");
 const activerooms = new Map();
 let PokerIO;
 
@@ -19,6 +18,7 @@ const RANKS = [
 	"K",
 	"A"
 ];
+
 const SUITS = ["Clubs", "Diamonds", "Hearts", "Spades"];
 
 class Deck {
@@ -33,7 +33,7 @@ class Deck {
 	}
 
 	shuffledeck() {
-		for (let i = 0; i < this.cards.length - 1; i++) {
+		for (let i = this.cards.length - 1; i > 0; i--) {
 			const j = Math.floor(Math.random() * (i + 1));
 			[this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
 		}
@@ -49,10 +49,8 @@ function setPokerIO(IO) {
 }
 
 class Poker_Room {
-	constructor(maxplayers, stacksize, visibility) {
+	constructor(maxplayers, stacksize, visibility, gamesplayed = 0) {
 		this.players = new Map();
-		this.activeplayers = null;
-		this.bettingplayers = null;
 		this.usernames = [];
 		this.nplayers = 0;
 		this.maxplayers = Number(maxplayers);
@@ -60,7 +58,7 @@ class Poker_Room {
 		this.pot = 0;
 		this.stacksize = stacksize;
 		this.round = 0;
-		this.gamesplayed = 0;
+		this.gamesplayed = gamesplayed;
 		this.visibility = visibility;
 		this.deck = new Deck();
 		this.communityCards = [];
@@ -75,6 +73,29 @@ class Poker_Room {
 	}
 	deletethis() {
 		activerooms.delete(this.roomID);
+	}
+}
+
+class Player {
+	constructor(
+		sessionID,
+		poker_socket,
+		username,
+		stacksize,
+		host,
+		icon,
+		earnings
+	) {
+		this.sessionID = sessionID;
+		this.poker_socket = poker_socket;
+		this.username = username;
+		this.cards = [];
+		this.stack = stacksize;
+		this.host = host;
+		this.icon = icon;
+		this.earnings = earnings;
+		this.kicked = false;
+		this.amountbet = 0;
 	}
 }
 
@@ -149,7 +170,7 @@ async function checkroomID(req, res, roomID) {
 				} else {
 					res.json({
 						success: false,
-						messsage: `This game has already begun. Please join another room, or contact the host`
+						message: `This game has already begun. Please join another room, or contact the host`
 					});
 				}
 			}
@@ -176,7 +197,7 @@ async function joinroom(req, res, roomID, room) {
 	room.nplayers += 1;
 	room.players.set(
 		req.session.AccountInfo.Username,
-		new players.Player(
+		new Player(
 			req.sessionID,
 			socket,
 			req.session.AccountInfo.Username,
@@ -256,8 +277,9 @@ function forceddisconnect(room, username) {
 async function pokerDisconnect(sessionID, path) {
 	const session = await RedisClient.getSession(sessionID);
 	if (session.PokerData && activerooms.get(Number(path.slice(-6)))) {
-		if (session.PokerData.gameactive) {
-			await activeDisconnect(sessionID, session);
+		const room = activerooms.get(Number(path.slice(-6)));
+		if (room.round !== 0) {
+			await activeDisconnect(sessionID, room);
 		} else {
 			await waitingDisconnect(sessionID, session);
 		}
@@ -297,9 +319,17 @@ async function waitingDisconnect(sessionID, session) {
 	PokerIO.to(room.roomID).emit("playerwaitingleave", playerInfo);
 }
 
-async function activeDisconnect(sessionID, session) {
-	//to be added
+async function activeDisconnect(sessionID, room) {
 	await RedisClient.setSession(sessionID, "ingame", false);
+	if (
+		!Array.from(room.players.values()).some((player) => {
+			return player.poker_socket.connected;
+		})
+	) {
+		room.deletetimer = setTimeout(() => {
+			room.deletethis();
+		}, 60 * 1000);
+	}
 }
 
 function showpublicrooms(req, res) {
@@ -326,5 +356,6 @@ module.exports = {
 	pokerDisconnect,
 	showpublicrooms,
 	setPokerIO,
-	removeplayer
+	removeplayer,
+	Poker_Room
 };

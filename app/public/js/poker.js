@@ -1,13 +1,15 @@
+let poker_socket;
+
 socket.on("nextsetup", (callback) => {
-	poker_socket = io("/poker");
+	poker_socket = io("/poker", { reconnection: false });
 	callback();
 });
 
 async function joinprivroom(e) {
 	e.preventDefault();
-	window.location.href =
-		window.location.origin +
-		`/games/poker/${document.getElementById("privroomIDinput").value}/`;
+	window.location.pathname = `/games/poker/${
+		document.getElementById("privroomIDinput").value
+	}/`;
 }
 
 async function getpublicrooms() {
@@ -49,7 +51,7 @@ async function createRoom(event) {
 	});
 	response = await response.json();
 	if (response.success) {
-		window.location.href = window.location.origin + response.redirect;
+		window.location.pathname = response.redirect;
 	} else {
 		document.getElementById("errormsg").innerHTML = response.errormessage;
 	}

@@ -6,7 +6,7 @@ const multer = require("multer");
 const cookies = require("../../management/cookies.js");
 const db = require("../../management/dbmanager.js");
 const fs = require("fs");
-const RedisClient = require("../redis.js");
+const RedisClient = require("redisjson-express-session-store");
 
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {

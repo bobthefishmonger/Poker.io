@@ -30,7 +30,7 @@
 </body>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-const socket = io();
+const socket = io({reconnection: false });
 </script>
 <script src="../../js/app.js"></script>
 <script src="../../js/publicaccount.js"></script>

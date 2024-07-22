@@ -115,9 +115,8 @@ function setplayertable(players) {
 }
 
 socket.on("nextsetup", (callback) => {
-	poker_socket = io("/poker");
+	poker_socket = io("/poker", { reconnection: false });
 	callback();
-
 	poker_socket.on("connect", async () => {
 		const data = { roomID: window.location.href.slice(0, -1).slice(-6) };
 		let response = await fetch("/games/poker/joinroom", {
@@ -128,7 +127,10 @@ socket.on("nextsetup", (callback) => {
 			body: JSON.stringify(data)
 		});
 		response = await response.json();
-		document.getElementById("testmsg").innerHTML = response.message;
+		if (!response.success) {
+			alert(response.message);
+			window.location.pathname = "/games/poker";
+		}
 	});
 
 	poker_socket.on("playerjoin", (players) => {
@@ -140,16 +142,15 @@ socket.on("nextsetup", (callback) => {
 		//notifications
 	});
 	poker_socket.on("updatehost", () => {
-		document.getElementById("testmsg").innerHTML += " You are now the host";
 		enablehost();
 	});
 
 	poker_socket.on("Removed: Kicked", () => {
-		window.location.href = window.location.origin + "/games/poker";
+		window.location.pathname = "/games/poker";
 	});
 
 	poker_socket.on("Removed: Banned", () => {
-		window.location.href = window.location.origin + "/games/poker";
+		window.location.pathname = "/games/poker";
 	});
 
 	poker_socket.on("gamestarting", (players) => {

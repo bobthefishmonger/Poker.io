@@ -1,13 +1,17 @@
 const db = require("./dbmanager.js");
 const argon2 = require("argon2");
 const cookies = require("./cookies.js");
-const RedisClient = require("../expressServer/redis.js");
-
+const RedisClient = require("redisjson-express-session-store");
 const activeaccounts = {};
 
 async function accountisactive(uname) {
 	if (!activeaccounts[uname]) return false;
-	return (await RedisClient.getSession(activeaccounts[uname])).isOnline;
+	try {
+		return (await RedisClient.getSession(activeaccounts[uname])).isOnline;
+	} catch {
+		console.error(activeaccounts[uname]);
+		console.error("Cant log in");
+	}
 }
 
 function check_password(password) {
@@ -146,8 +150,10 @@ async function logInAuto(req, res) {
 			req.session.SessionInfo = SessionInfo;
 			if (db.validIP(AccountID, req.clientIP)) {
 				const Username = (await db.getUsername(AccountID)).Username;
-				if (await accountisactive(Username))
+				if (await accountisactive(Username)) {
+					req.session.AccountInfo = { LoggedIn: false };
 					return "Should not be logged in";
+				}
 				const visualsandearnings = await db.getVisualsandEarnings(
 					AccountID
 				);

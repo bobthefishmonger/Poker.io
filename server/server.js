@@ -38,8 +38,6 @@ http.listen(process.env.PORT, () => {
 //     redirectNote: undefined | String
 //     PokerData: undefined | null | {
 //         roomID: Number,
-//         maxplayers: Number ,
-//         gameactive: Boolean
+//         maxplayers: Number
 //     }
-//     bannedPokerRooms: undefined | Map [Number [RoomID]: String [reason]]
 // }

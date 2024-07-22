@@ -1,6 +1,6 @@
 const socketutils = require("./socketutils.js");
 const poker_rooms = require("../games/poker/rooms.js");
-const RedisClient = require("../expressServer/redis.js");
+const RedisClient = require("redisjson-express-session-store");
 const PokerGame = require("../games/poker/game.js");
 
 async function poker_socket_setup(poker_socket) {

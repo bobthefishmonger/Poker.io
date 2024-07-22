@@ -1,5 +1,4 @@
-const RedisClient = require("../expressServer/redis.js");
-
+const RedisClient = require("redisjson-express-session-store");
 const poker_sockets = new Map();
 const blackjack_sockets = new Map();
 const roulette_sockets = new Map();
