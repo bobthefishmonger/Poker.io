@@ -95,6 +95,7 @@ async function validateSessionInfocookie(req, res) {
 }
 
 function createDisplayInformationCookie(req, res) {
+	res.clearCookie("DisplayInformation");
 	let DisplayInformation;
 	try {
 		DisplayInformation = {
@@ -113,6 +114,5 @@ function createDisplayInformationCookie(req, res) {
 module.exports = {
 	validateSessionInfocookie,
 	createDisplayInformationCookie,
-	resetSessionInfoCookie,
-	decrypt //for debug
+	resetSessionInfoCookie
 };

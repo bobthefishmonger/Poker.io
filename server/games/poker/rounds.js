@@ -246,6 +246,7 @@ function handlechoice(room, player, choice, callAmount) {
 			player.username,
 			room.playerbets.get(player.username) + choice[1]
 		);
+		player.amountbet += choice[1];
 	} else {
 		if (islastplayer(room, player)) {
 			room.roundover = true;

@@ -33,7 +33,6 @@ function startgame(req, res) {
 
 async function updateWinnings(room, winners) {
 	const winnings = Math.floor(room.pot / winners.length / 5) * 5;
-	console.log(winnings);
 	for (const winner of winners) {
 		const sessionID = room.players.get(winner).sessionID;
 		const session = await RedisClient.getSession(sessionID);

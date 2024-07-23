@@ -83,7 +83,14 @@ window.onload = () => {
 			`../../uploads/profileimage/${getDisplayInformation().profileIcon}`
 		);
 	setCSStheme("accounts");
+	setEarningstable();
 };
+function setEarningstable() {
+	const earnings = getDisplayInformation().Earnings;
+	document.getElementById("pokerEarnings").innerHTML = earnings.Poker;
+	document.getElementById("blackjackEarnings").innerHTML = earnings.Blackjack;
+	document.getElementById("rouletteEarnings").innerHTML = earnings.Roulette;
+}
 
 window.addEventListener("beforeunload", () => {
 	socket.disconnect(true);
