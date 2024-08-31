@@ -1,64 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Home</title>
-        <link rel="icon" href="../assets/favicon.png">
-        <link rel="stylesheet" id="appcsslink" href="../css/Default/app.css">
-        <link rel="stylesheet" id="homecsslink" href="../css/Default/home.css">
-    </head>
-    <body>
-        <div class="content">
-            <div class="header">
-                <div class="menu_bar">
-                    <div class="menu_section">
-                        <div class="inner_menu_section">
-                            <div class="menu_link">
-                                <a href=""></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="menu_section">
-                        <div class="inner_menu_section">
-                            <div class="menu_link">
-                                <a href=""></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="menu_section">
-                        <div class="inner_menu_section">
-                            <div class="menu_link">
-                                <a href=""></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="menu_section">
-                        <div class="inner_menu_section">
-                            <div class="menu_link">
-                                <a href=""></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="activity">
-                <p>This is a homepage</p>
-                <a href="../account">Accounts</a>
-                <a href="../account/signup">Signup</a>
-                <a href="../account/login?redirect=/account">Login</a>
-                <a href="../games">Games</a>
-                <a href="../games/poker">Poker</a>
-                <a href="../games/blackjack">Blackjack</a>
-                <a href="../games/roulette">Roulette</a>
-                <a href="../leaderboard">Leaderboard</a>
-            </div>
-        </div>
-    </body>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-    const socket = io({reconnection: false });
-    </script>
-    <script src="../js/app.js"></script>
-    <script src="../js/home.js"></script>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="Play poker, blackjack, roulette online for free!"
+		/>
+		<title>Home | Poker.IO</title>
+		<link rel="icon" href="../assets/favicon.png" />
+		<link rel="stylesheet" id="appcsslink" href="../css/Default/app.css" />
+		<link
+			rel="stylesheet"
+			id="homecsslink"
+			href="../css/Default/home.css"
+		/>
+	</head>
+	<body>
+		<header>
+			<nav class="nav-bar">
+				<div class="nav-bar-item nav-bar-title-container">
+					<img
+						class="nav-bar-toggle-left"
+						id="nav-bar-m-account-image"
+						src="../assets/blank-account-white.svg"
+						alt="profile-icon"
+					/>
+					<h1 class="nav-bar-title">
+						P<img
+							class="nav-bar-title-image"
+							src="../assets/favicon.png"
+							alt="o"
+						/>ker<span class="nav-bar-title-end">.IO</span>
+					</h1>
+					<img
+						class="nav-bar-toggle-image profile-icon"
+						id="toggle-menu-button"
+						src="../assets/mobile-menu.svg"
+						alt="open menu"
+					/>
+				</div>
+				<div class="nav-bar-item m_hidden nav-bar-link-container">
+					<a class="nav-bar-link" href="/home/">Home</a>
+				</div>
+				<div class="nav-bar-item m_hidden nav-bar-link-container">
+					<a class="nav-bar-link" href="/games/">Games</a>
+				</div>
+				<div class="nav-bar-item m_hidden nav-bar-link-container">
+					<a class="nav-bar-link" href="/leaderboard/"
+						>Leaderboards</a
+					>
+				</div>
+				<div class="nav-bar-item m_hidden nav-bar-link-container">
+					<a
+						class="nav-bar-link nav-bar-account-link"
+						href="/account/"
+						>Account</a
+					>
+				</div>
+			</nav>
+		</header>
+		<main>
+			<p>Add home stuff</p>
+		</main>
+		<footer>
+			<div class="github-external-link-container">
+				<div class="github-external-link-body">
+					<a
+						class="github-external-link"
+						href="https://github.com/bobthefishmonger"
+						>Visit our github</a
+					>
+				</div>
+				<div class="github-external-link-body">
+					<a
+						class="github-external-link"
+						href="https://github.com/bobthefishmonger/poker.io/issues"
+						>Report an issue</a
+					>
+				</div>
+			</div>
+		</footer>
+	</body>
+	<noscript
+		><style>
+			header,
+			main,
+			footer {
+				display: none;
+			}
+		</style>
+		<div class="no-script-message">Please enable js to continue</div>
+	</noscript>
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+		const socket = io({ reconnection: false });
+	</script>
+	<script src="../js/app.js"></script>
+	<script src="../js/home.js"></script>
 </html>

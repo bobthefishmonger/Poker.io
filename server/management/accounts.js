@@ -8,9 +8,10 @@ async function accountisactive(uname) {
 	if (!activeaccounts[uname]) return false;
 	try {
 		return (await RedisClient.getSession(activeaccounts[uname])).isOnline;
-	} catch {
+	} catch (e) {
 		console.error(activeaccounts[uname]);
 		console.error("Cant log in");
+		console.log(e);
 	}
 }
 

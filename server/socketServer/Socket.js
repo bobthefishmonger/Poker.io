@@ -3,8 +3,16 @@ const poker_rooms = require("../games/poker/rooms.js");
 const RedisClient = require("redisjson-express-session-store");
 const PokerGame = require("../games/poker/game.js");
 
-async function poker_socket_setup(poker_socket) {
+async function poker_socket_setup(poker_socket, PokerIO) {
 	const sessionID = await socketutils.anysocketconnect(poker_socket, 0);
+	poker_socket.on("sendmsg", async (msg) => {
+		const session = await RedisClient.getSession(sessionID);
+		PokerIO.to(session.PokerData?.roomID).emit(
+			"chatmsg",
+			session.AccountInfo.Username,
+			msg
+		);
+	});
 	poker_socket.on("disconnecting", async () => {
 		await poker_rooms.pokerDisconnect(
 			sessionID,
@@ -47,7 +55,7 @@ function socketsetup(io) {
 	const RouletteIO = io.of("/roulette");
 	PokerGame.setPokerIO(PokerIO);
 	PokerIO.on("connection", (poker_socket) => {
-		poker_socket_setup(poker_socket);
+		poker_socket_setup(poker_socket, PokerIO);
 	});
 
 	BlackjackIO.on("connection", (blackjack_socket) => {

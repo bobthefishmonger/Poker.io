@@ -72,5 +72,11 @@ window.addEventListener("beforeunload", () => {
 
 window.onload = async () => {
 	setCSStheme("poker");
+	setHeaderIcons();
 	await getpublicrooms();
 };
+
+function toggleMenu(e) {
+	e.preventDefault();
+	document.querySelector("drop-down-options").classList.toggle("show");
+}

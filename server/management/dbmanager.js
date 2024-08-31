@@ -426,6 +426,73 @@ function updatePokerEarnings(AccountID, poker) {
 	});
 }
 
+async function addfriendship(AccountID1, AccountID2) {
+	return new Promise((resolve, reject) => {
+		const db = dbconnection();
+		db.run(
+			`
+			INSERT INTO tblFriends (AccountID1, AccountID2)
+			VALUES (?, ?)
+		`,
+			[AccountID1, AccountID2],
+			(err) => {
+				if (err) {
+					reject(err.message);
+				} else {
+					resolve("added");
+				}
+			}
+		);
+		dbclose(db);
+	});
+}
+async function getFriendsID(AccountID) {
+	return new Promise((resolve, reject) => {
+		const db = dbconnection();
+		db.all(
+			`
+			SELECT AccountID2 as FriendID
+			FROM tblFriends
+			WHERE AccountID1 = ?
+			UNION
+			SELECT AccountID1 as FriendID
+			FROM tblFriends
+			WHERE AccountID2 = ?
+		`,
+			[AccountID, AccountID],
+			(err, rows) => {
+				if (err) {
+					reject(err.message);
+				} else {
+					const friendsIDs = rows.map((row) => row.FriendID);
+					resolve(friendsIDs);
+				}
+			}
+		);
+		dbclose(db);
+	});
+}
+
+async function delFriendship(AccountID1, AccountID2) {
+	return new Promise((resolve, reject) => {
+		const db = dbconnection();
+		db.run(
+			`
+			DELETE FROM tblFriends
+			WHERE (AccountID1 = ? AND AccountID2 = ?) OR (AccountID1 = ? AND AccountID2 = ?)
+		`,
+			[AccountID1, AccountID2, AccountID2, AccountID1],
+			(err) => {
+				if (err) {
+					reject(err.message);
+				} else {
+					resolve("Deleted");
+				}
+			}
+		);
+		dbclose(db);
+	});
+}
 module.exports = {
 	checkSessionInfo,
 	updateSessionInfo,
@@ -439,5 +506,8 @@ module.exports = {
 	validIP,
 	updatePreference,
 	getPublicInfo,
-	updatePokerEarnings
+	updatePokerEarnings,
+	addfriendship,
+	getFriendsID,
+	delFriendship
 };

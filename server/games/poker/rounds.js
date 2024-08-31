@@ -1,6 +1,5 @@
 const eval = require("poker-eval");
 const TIMEOUTLENGTH = 120_000;
-
 const BlindSizes = {
 	2500: [10, 25],
 	5000: [25, 50],
@@ -99,7 +98,6 @@ async function betround(room) {
 	while (!room.roundover) {
 		for (const [username, player] of room.players) {
 			const callAmount = room.callAmount - room.playerbets.get(username);
-			room.playergo = username;
 			if (
 				room.foldedplayers.get(username) ||
 				room.allinplayers.get(username)
@@ -114,6 +112,8 @@ async function betround(room) {
 				if (islastplayer(room, player)) room.roundover = true;
 				return;
 			}
+			room.playergo = username;
+
 			const options = ["Fold", "All-in"];
 			if (room.cancheck) {
 				options.push("Check");
@@ -143,10 +143,14 @@ async function betround(room) {
 				choice,
 				room.firstbetplayer
 			);
+			room.lastgo = [username, choice, room.firstbetplayer];
 			try {
 				handlechoice(room, player, choice, callAmount);
-			} catch (err) {}
+			} catch (err) {
+				console.error(err);
+			}
 			player.poker_socket.emit("Stack change", player.stack);
+			room.playergo = null;
 		}
 	}
 }
@@ -160,13 +164,18 @@ async function getPlayerDecision(
 	stacksize
 ) {
 	return new Promise((resolve, reject) => {
-		player.poker_socket.emit(
-			"Players Turn",
-			options,
-			firstbetplayer,
-			callAmount,
-			stacksize,
-			(decision) => {
+		function playerDisconnect() {
+			player.reconnection = [
+				"Players Turn",
+				options,
+				firstbetplayer,
+				callAmount,
+				stacksize,
+				decision
+			];
+		}
+		function decision(decision) {
+			{
 				try {
 					if (
 						!decision ||
@@ -186,6 +195,7 @@ async function getPlayerDecision(
 					clearTimeout(timeoutplayer);
 					resolve(decision);
 					player.poker_socket.emit("finished go", null);
+					player.poker_socket.off("disconnecting", playerDisconnect);
 				} catch (err) {
 					player.poker_socket.emit("finished go", err.message || err);
 					getPlayerDecision(
@@ -200,10 +210,24 @@ async function getPlayerDecision(
 						.catch(reject);
 				}
 			}
+		}
+		player.poker_socket.emit(
+			"Players Turn",
+			options,
+			firstbetplayer,
+			callAmount,
+			stacksize,
+			decision
 		);
 		const timeoutplayer = setTimeout(() => {
 			reject("timed out");
+			player.poker_socket.off("disconnecting", playerDisconnect);
 		}, TIMEOUTLENGTH);
+		if (player.poker_socket.connected) {
+			player.poker_socket.on("disconnecting", playerDisconnect);
+		} else {
+			playerDisconnect();
+		}
 	});
 }
 
@@ -225,7 +249,7 @@ function handlechoice(room, player, choice, callAmount) {
 		player.stack = 0;
 		room.playerbets.set(
 			player.username,
-			room.playerbets.get(player.username) + stack
+			room.playerbets.get(player.username) + player.stack
 		);
 	} else if (choice[0] === "Call") {
 		player.stack -= callAmount;

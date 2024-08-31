@@ -10,14 +10,23 @@ const sockets = [
 	roulette_sockets,
 	globalsockets
 ];
+
 const types = ["poker_socket", "blackjack_socket", "roulette_socket", "socket"];
 
 function getpath(socket) {
-	let url = socket.request.headers.referer.split(
-		socket.request.headers.host
-	)[1];
-	url = url.slice(0, -1);
-	return url;
+	try {
+		let url = socket.request.headers.referer.split(
+			socket.request.headers.host
+		)[1];
+		url = url.slice(0, -1);
+		return url;
+	} catch {
+		let url = socket.request.headers.referer.split(
+			socket.request.headers["x-forwarded-host"]
+		)[1];
+		url = url.slice(0, -1);
+		return url;
+	}
 }
 
 async function anysocketconnect(socket, type) {

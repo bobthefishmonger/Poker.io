@@ -29,6 +29,7 @@ async function submitsignup(event) {
 
 window.onload = () => {
 	setCSStheme("login");
+	setHeaderIcons();
 };
 window.addEventListener("beforeunload", () => {
 	socket.disconnect(true);

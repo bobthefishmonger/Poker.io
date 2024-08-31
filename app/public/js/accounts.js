@@ -18,16 +18,22 @@ async function addprofileicon() {
 	});
 	response = await response.json();
 	if (response.success) {
-		document.getElementById("successmessage").innerHTML =
-			"Successfully uploaded";
-		document
-			.getElementById("profileicon")
-			.setAttribute(
-				"src",
-				`../../uploads/profileimage/${
-					getDisplayInformation().profileIcon
-				}`
-			);
+		try {
+			document.getElementById("successmessage").innerHTML =
+				"Successfully uploaded";
+			document
+				.getElementById("profileicon")
+				.setAttribute(
+					"src",
+					`../../uploads/profileimage/${
+						getDisplayInformation().profileIcon
+					}`
+				);
+		} catch {
+			document.getElementById("successmessage").innerHTML =
+				"An error occured, please retry";
+			document.getElementById("successmessage").classList.add("Errors");
+		}
 	} else {
 		document.getElementById("successmessage").innerHTML =
 			"An error occured, please retry";
@@ -47,16 +53,22 @@ async function updatetheme() {
 	});
 	response = await response.json();
 	if (response.success) {
-		document.getElementById("successmessage").innerHTML =
-			"Successfully uploaded";
-		document
-			.getElementById("profileicon")
-			.setAttribute(
-				"src",
-				`../../uploads/profileimage/${
-					getDisplayInformation().profileIcon
-				}`
-			);
+		try {
+			document.getElementById("successmessage").innerHTML =
+				"Successfully uploaded";
+			document
+				.getElementById("profileicon")
+				.setAttribute(
+					"src",
+					`../../uploads/profileimage/${
+						getDisplayInformation().profileIcon
+					}`
+				);
+		} catch {
+			document.getElementById("successmessage").innerHTML =
+				"An error occured, please retry";
+			document.getElementById("successmessage").classList.add("Errors");
+		}
 	} else {
 		document.getElementById("successmessage").innerHTML =
 			"An error occured, please retry";
@@ -76,14 +88,21 @@ document.getElementById("iconsubmitbtn").onclick = async () => {
 document.getElementById("logoutbtn").onclick = logout;
 
 window.onload = () => {
-	document
-		.getElementById("profileicon")
-		.setAttribute(
-			"src",
-			`../../uploads/profileimage/${getDisplayInformation().profileIcon}`
-		);
-	setCSStheme("accounts");
-	setEarningstable();
+	try {
+		document
+			.getElementById("profileicon")
+			.setAttribute(
+				"src",
+				`../../uploads/profileimage/${
+					getDisplayInformation().profileIcon
+				}`
+			);
+		setCSStheme("accounts");
+		setEarningstable();
+	} catch {
+		window.location.reload();
+	}
+	setHeaderIcons();
 };
 function setEarningstable() {
 	const earnings = getDisplayInformation().Earnings;

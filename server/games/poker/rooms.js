@@ -3,6 +3,8 @@ const RedisClient = require("redisjson-express-session-store");
 const activerooms = new Map();
 let PokerIO;
 
+const activeDisconnectedPlayers = new Map();
+
 const RANKS = [
 	"2",
 	"3",
@@ -63,6 +65,8 @@ class Poker_Room {
 		this.deck = new Deck();
 		this.communityCards = [];
 		this.removedplayers = new Map();
+		this.lastgo = null;
+		this.playergo = null;
 		this.deletetimer = setTimeout(() => {
 			room.deletethis();
 		}, 5 * 60 * 1000);
@@ -72,7 +76,17 @@ class Poker_Room {
 		activerooms.set(this.roomID, this);
 	}
 	deletethis() {
-		activerooms.delete(this.roomID);
+		if (
+			!Array.from(this.players.values()).some((player) => {
+				return player.poker_socket.connected;
+			})
+		) {
+			this.players.forEach((player) => {
+				activeDisconnectedPlayers.delete(player.sessionID);
+			});
+			activerooms.delete(this.roomID);
+			console.log("deleted");
+		}
 	}
 }
 
@@ -136,46 +150,53 @@ function createRoom(req, res) {
 }
 
 async function checkroomID(req, res, roomID) {
+	if (req.get("referer").slice(-7) !== `${roomID}/`) {
+		res.json({ success: false, message: "Not on the page" });
+		return;
+	}
 	if (!roomID || isNaN(roomID) || !(roomID.toString().length === 6)) {
 		res.json({ success: false, message: "Invalid roomID" });
-	} else {
-		roomID = Number(roomID);
-		if (!activerooms.has(roomID)) {
-			res.json({ success: false, message: "Not an active room" });
-		} else {
-			const room = activerooms.get(roomID);
-			let removedreason = room.removedplayers.get(req.sessionID);
-			if (removedreason === "Banned") {
-				res.json({
-					success: false,
-					message: `You have been banned. You can no longer join this room.`
-				});
-			} else if (removedreason === "Kicked") {
-				res.json({
-					success: false,
-					message: `You have been kicked from this room. You cannot join for 1 minute after being kicked`
-				});
-			} else {
-				clearTimeout(room.deletetimer);
-				room.deletetimer = null;
-				if (!room.round) {
-					if (room.nplayers < room.maxplayers) {
-						await joinroom(req, res, roomID, room);
-					} else {
-						res.json({
-							success: false,
-							message: `${room.roomID} is already full. Please join another room, or contact the host`
-						});
-					}
-				} else {
-					res.json({
-						success: false,
-						message: `This game has already begun. Please join another room, or contact the host`
-					});
-				}
-			}
-		}
+		return;
 	}
+	roomID = Number(roomID);
+	if (!activerooms.has(roomID)) {
+		res.json({ success: false, message: "Not an active room" });
+		return;
+	}
+	const room = activerooms.get(roomID);
+	let removedreason = room.removedplayers.get(req.sessionID);
+	if (removedreason === "Banned") {
+		res.json({
+			success: false,
+			message: `You have been banned. You can no longer join this room.`
+		});
+		return;
+	}
+	if (removedreason === "Kicked") {
+		res.json({
+			success: false,
+			message: `You have been kicked from this room. You cannot join for 1 minute after being kicked`
+		});
+		return;
+	}
+	clearTimeout(room.deletetimer);
+	room.deletetimer = null;
+	if (!room.round) {
+		if (room.nplayers < room.maxplayers) {
+			await joinroom(req, res, roomID, room);
+		} else {
+			res.json({
+				success: false,
+				message: `${room.roomID} is already full. Please join another room, or contact the host`
+			});
+		}
+		return;
+	}
+	res.json({
+		success: false,
+		message: `This game has already begun. Please join another room, or contact the host`
+	});
+	return;
 }
 
 async function joinroom(req, res, roomID, room) {
@@ -274,18 +295,6 @@ function forceddisconnect(room, username) {
 	PokerIO.to(room.roomID).emit("playerwaitingleave", playerInfo);
 }
 
-async function pokerDisconnect(sessionID, path) {
-	const session = await RedisClient.getSession(sessionID);
-	if (session.PokerData && activerooms.get(Number(path.slice(-6)))) {
-		const room = activerooms.get(Number(path.slice(-6)));
-		if (room.round !== 0) {
-			await activeDisconnect(sessionID, room);
-		} else {
-			await waitingDisconnect(sessionID, session);
-		}
-	}
-}
-
 async function waitingDisconnect(sessionID, session) {
 	const room = activerooms.get(session.PokerData.roomID);
 	room.nplayers -= 1;
@@ -321,6 +330,7 @@ async function waitingDisconnect(sessionID, session) {
 
 async function activeDisconnect(sessionID, room) {
 	await RedisClient.setSession(sessionID, "ingame", false);
+	activeDisconnectedPlayers.set(sessionID, room.roomID);
 	if (
 		!Array.from(room.players.values()).some((player) => {
 			return player.poker_socket.connected;
@@ -329,6 +339,18 @@ async function activeDisconnect(sessionID, room) {
 		room.deletetimer = setTimeout(() => {
 			room.deletethis();
 		}, 60 * 1000);
+	}
+}
+
+async function pokerDisconnect(sessionID, path) {
+	const session = await RedisClient.getSession(sessionID);
+	if (session.PokerData && activerooms.get(Number(path.slice(-6)))) {
+		const room = activerooms.get(Number(path.slice(-6)));
+		if (room.round !== 0) {
+			await activeDisconnect(sessionID, room);
+		} else {
+			await waitingDisconnect(sessionID, session);
+		}
 	}
 }
 
@@ -349,6 +371,79 @@ function showpublicrooms(req, res) {
 	res.json({ rooms: JSON.stringify(publicRooms) });
 }
 
+function sendhistory(room, poker_socket, player) {
+	poker_socket.emit(
+		"Player Cards",
+		player.cards,
+		room.usernames.indexOf(player.username) + 1
+	);
+	if (room.round >= 1) {
+		if (room.lastgo && !room.winners)
+			poker_socket.emit("Player Go", ...room.lastgo);
+		if (room.playergo === player.username) {
+			poker_socket.emit(...player.reconnection);
+		}
+	}
+	if (room.round >= 2) {
+		poker_socket.emit("Flop cards", room.communityCards.slice(0, 3));
+	}
+	if (room.round >= 3) {
+		poker_socket.emit("Turn card", room.communityCards[3]);
+	}
+	if (room.round >= 4) {
+		poker_socket.emit("River card", room.communityCards[4]);
+	}
+	if (room.round === 5) {
+		if (room.winners) poker_socket.emit("winners", ...room.winners);
+		if (room.newroom) {
+			poker_socket.emit("New Room", room.newroom);
+		} else if (room.homebtn) {
+			poker_socket.emit("homebtn");
+		} else {
+			if (room.emittedrematch && room.host.username === player.username) {
+				poker_socket.emit("rematch", room.emittedrematch);
+			}
+		}
+	}
+}
+async function rejoin(req, res) {
+	const session = await RedisClient.getSession(req.sessionID);
+	const poker_socket = socketutils.getpokersocket(
+		session.socketids.poker_socket
+	);
+	const room = activerooms.get(
+		Number(socketutils.getpath(poker_socket).slice(-6))
+	);
+	if (room) {
+		if (activeDisconnectedPlayers.get(req.sessionID) === room.roomID) {
+			const player = room.players.get(session.AccountInfo.Username);
+			player.poker_socket = poker_socket;
+			await RedisClient.setSessiondouble(
+				req.sessionID,
+				["PokerData", "ingame"],
+				[
+					{
+						roomID: room.roomID,
+						maxplayers: room.maxplayers,
+						gameactive: true
+					},
+					true
+				]
+			);
+			PokerIO.to(room.roomID).emit("rejoin", player.username);
+			poker_socket.join(room.roomID);
+			poker_socket.emit("reconnect-setup", room.usernames);
+			sendhistory(room, poker_socket, player);
+			res.send({ success: true, message: "Rejoined room" });
+			return true;
+		} else {
+			return false;
+		}
+	} else {
+		return false;
+	}
+}
+
 module.exports = {
 	activerooms,
 	checkroomID,
@@ -357,5 +452,6 @@ module.exports = {
 	showpublicrooms,
 	setPokerIO,
 	removeplayer,
-	Poker_Room
+	Poker_Room,
+	rejoin
 };

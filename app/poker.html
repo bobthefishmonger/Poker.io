@@ -1,61 +1,220 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Poker</title>
-    <link rel="icon" href="../../assets/favicon.png">
-    <link rel="stylesheet" id="appcsslink" href="../../css/Default/app.css">
-    <link rel="stylesheet" id="pokercsslink" href="../../css/Default/poker.css">
-</head>
-<body>
-    <p>This is a poker page</p>
-    <p>We should have a list of public rooms for people to join</p>
-    <div>
-        <form>
-            <select id="visibility">
-                <option value="public">Public</option>
-                <option value="private">Private</option>
-            </select> 
-            <select id="nplayers">
-                <option value=2>2</option>
-                <option value=3>3</option>
-                <option value=4>4</option>
-                <option value=5>5</option>
-                <option value=6>6</option>
-                <option value=7>7</option>
-                <option value=8>8</option>
-                <option value=9>9</option>
-                <option value=10>10</option>
-                <option value=11>11</option>
-                <option value=12>12</option>
-            </select>
-            <select id="stacksize">
-                <option value=2500>2500</option>
-                <option value=5000>5000</option>
-                <option value=10000>10000</option>
-            </select>
-        <button id="createroombtn">Create Room!</button>
-        </form>
-        <p id="errormsg"></p>
-    </div>
-    <div>
-        <button id="showroomsbtn">Refresh RoomList</button>
-        <table id="publicrooms">
-        </table>
-    </div>
-    <div>
-        <p>Or Join a privategame</p>
-        <form onsubmit="joinprivroom(event)">
-            <input id="privroomIDinput" placeholder="roomID:" >
-            <button>Submit</button>
-        </form>
-    </div>
-</body>
-<script src="/socket.io/socket.io.js"></script>
-<script>
-const socket = io({reconnection: false });
-</script>
-<script src="../../js/app.js"></script>
-<script src="../../js/poker.js"></script>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="Play poker, blackjack, roulette online for free!"
+		/>
+		<title>Poker | Poker.IO</title>
+		<link rel="icon" href="../../assets/favicon.png" />
+		<link
+			rel="stylesheet"
+			id="appcsslink"
+			href="../../css/Default/app.css"
+		/>
+		<link
+			rel="stylesheet"
+			id="pokercsslink"
+			href="../../css/Default/poker.css"
+		/>
+	</head>
+	<body>
+		<header>
+			<nav class="nav-bar">
+				<div class="nav-bar-item nav-bar-title-container">
+					<img
+						class="nav-bar-toggle-left"
+						id="nav-bar-m-account-image"
+						src="../../assets/blank-account-white.svg"
+						alt="profile-icon"
+					/>
+					<h1 class="nav-bar-title">
+						P<img
+							class="nav-bar-title-image"
+							src="../../assets/favicon.png"
+							alt="o"
+						/>ker<span class="nav-bar-title-end">.IO</span>
+					</h1>
+					<img
+						class="nav-bar-toggle-image profile-icon"
+						id="toggle-menu-button"
+						src="../../assets/mobile-menu.svg"
+						alt="open menu"
+					/>
+				</div>
+				<div class="nav-bar-item m_hidden nav-bar-link-container">
+					<a class="nav-bar-link" href="/home/">Home</a>
+				</div>
+				<div class="nav-bar-item m_hidden nav-bar-link-container">
+					<a class="nav-bar-link" href="/games/">Games</a>
+				</div>
+				<div class="nav-bar-item m_hidden nav-bar-link-container">
+					<a class="nav-bar-link" href="/leaderboard/"
+						>Leaderboards</a
+					>
+				</div>
+				<div class="nav-bar-item m_hidden nav-bar-link-container">
+					<a
+						class="nav-bar-link nav-bar-account-link"
+						href="/account/"
+						>Account</a
+					>
+				</div>
+			</nav>
+		</header>
+		<main>
+			<form>
+				<select id="visibility">
+					<option value="public">Public</option>
+					<option value="private">Private</option>
+				</select>
+				<select id="nplayers">
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="11">11</option>
+					<option value="12">12</option>
+				</select>
+				<select id="stacksize">
+					<option value="2500">2500</option>
+					<option value="5000">5000</option>
+					<option value="10000">10000</option>
+				</select>
+				<button id="createroombtn">Create Room!</button>
+			</form>
+			<p id="errormsg"></p>
+			<div>
+				<button id="showroomsbtn">Refresh RoomList</button>
+				<table id="publicrooms"></table>
+			</div>
+			<div>
+				<p>Or Join a privategame</p>
+				<form onsubmit="joinprivroom(event)">
+					<input id="privroomIDinput" placeholder="roomID:" />
+					<button>Submit</button>
+				</form>
+			</div>
+			<div class="test">
+				<p>Please Select One Option</p>
+				<div class="create-room-options">
+					<div class="drop-down-container">
+						<button class="drop-down-button down-menu">
+							Visibility
+						</button>
+						<div class="drop-down-options">
+							<div class="drop-down-option"><p>Public</p></div>
+							<div class="drop-down-option"><p>Private</p></div>
+						</div>
+					</div>
+					<div class="drop-down-container">
+						<button class="drop-down-button down-menu">
+							Number of Player
+						</button>
+						<div class="drop-down-options">
+							<div
+								class="drop-down-option"
+								id="n-players-option2"
+							>
+								<p>2</p>
+							</div>
+							<div
+								class="drop-down-option"
+								id="n-players-option3"
+							>
+								<p>3</p>
+							</div>
+							<div
+								class="drop-down-option"
+								id="n-players-option4"
+							>
+								<p>4</p>
+							</div>
+							<div
+								class="drop-down-option"
+								id="n-players-option5"
+							>
+								<p>5</p>
+							</div>
+							<div
+								class="drop-down-option"
+								id="n-players-option6"
+							>
+								<p>6</p>
+							</div>
+							<div
+								class="drop-down-option"
+								id="n-players-option7"
+							>
+								<p>7</p>
+							</div>
+							<div
+								class="drop-down-option"
+								id="n-players-option8"
+							>
+								<p>8</p>
+							</div>
+							<div
+								class="drop-down-option"
+								id="n-players-option9"
+							>
+								<p>9</p>
+							</div>
+							<div
+								class="drop-down-option"
+								id="n-players-option10"
+							>
+								<p>10</p>
+							</div>
+							<div
+								class="drop-down-option"
+								id="n-players-option11"
+							>
+								<p>11</p>
+							</div>
+							<div
+								class="drop-down-option"
+								id="n-players-option12"
+							>
+								<p>12</p>
+							</div>
+						</div>
+					</div>
+					<div class="drop-down-container">
+						<button class="drop-down-button down-menu">
+							StackSize
+						</button>
+						<div class="drop-down-options">
+							<div class="drop-down-option"><p>2500</p></div>
+							<div class="drop-down-option"><p>5000</p></div>
+							<div class="drop-down-option"><p>10000</p></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+	</body>
+	<noscript
+		><style>
+			header,
+			main,
+			footer {
+				display: none;
+			}
+		</style>
+		<div class="no-script-message">Please enable js to continue</div>
+	</noscript>
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+		const socket = io({ reconnection: false });
+	</script>
+	<script src="../../js/app.js"></script>
+	<script src="../../js/poker.js"></script>
 </html>

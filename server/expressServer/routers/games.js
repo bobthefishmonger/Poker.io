@@ -51,7 +51,9 @@ router.post("/poker/joinroom", async (req, res) => {
 				"You cannot access Poker whilst not logged in";
 			res.redirect(`/account/login?redirect=/games/poker/${roomID}`);
 		} else {
-			await poker_rooms.checkroomID(req, res, roomID);
+			if (!(await poker_rooms.rejoin(req, res))) {
+				await poker_rooms.checkroomID(req, res, roomID);
+			}
 		}
 	}
 });

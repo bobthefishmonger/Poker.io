@@ -1,20 +1,449 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roulette</title>
-    <link rel="icon" href="../../assets/favicon.png">
-    <link rel="stylesheet" id="appcsslink" href="../../css/Default/app.css">
-    <link rel="stylesheet" id="roulettecsslink" href="../../css/Default/roulette.css">
-</head>
-<body>
-    <p>This is a roulette page</p>
-</body>
-<script src="/socket.io/socket.io.js"></script>
-<script>
-const socket = io({reconnection: false });
-</script>
-<script src="../../js/app.js"></script>
-<script src="../../js/roulette.js"></script>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="Play poker, blackjack, roulette online for free!"
+		/>
+		<title>Roulette | Poker.IO</title>
+		<link rel="icon" href="../../assets/favicon.png" />
+		<link
+			rel="stylesheet"
+			id="appcsslink"
+			href="../../css/Default/app.css"
+		/>
+		<link
+			rel="stylesheet"
+			id="roulettecsslink"
+			href="../../css/Default/roulette.css"
+		/>
+	</head>
+	<body>
+		<header>
+			<nav class="nav-bar">
+				<div class="nav-bar-item nav-bar-title-container">
+					<img
+						class="nav-bar-toggle-left"
+						id="nav-bar-m-account-image"
+						src="../../assets/blank-account-white.svg"
+						alt="profile-icon"
+					/>
+					<h1 class="nav-bar-title">
+						P<img
+							class="nav-bar-title-image"
+							src="../../assets/favicon.png"
+							alt="o"
+						/>ker<span class="nav-bar-title-end">.IO</span>
+					</h1>
+					<img
+						class="nav-bar-toggle-image profile-icon"
+						id="toggle-menu-button"
+						src="../../assets/mobile-menu.svg"
+						alt="open menu"
+					/>
+				</div>
+				<div class="nav-bar-item m_hidden nav-bar-link-container">
+					<a class="nav-bar-link" href="/home/">Home</a>
+				</div>
+				<div class="nav-bar-item m_hidden nav-bar-link-container">
+					<a class="nav-bar-link" href="/games/">Games</a>
+				</div>
+				<div class="nav-bar-item m_hidden nav-bar-link-container">
+					<a class="nav-bar-link" href="/leaderboard/"
+						>Leaderboards</a
+					>
+				</div>
+				<div class="nav-bar-item m_hidden nav-bar-link-container">
+					<a
+						class="nav-bar-link nav-bar-account-link"
+						href="/account/"
+						>Account</a
+					>
+				</div>
+			</nav>
+		</header>
+		<main>
+			<div class="stack"></div>
+			<div class="roulette">
+				<div class="roulette-spinner-container">
+					<img
+						draggable="false"
+						id="roulette-spinner"
+						src="../../assets/roulette-wheel.png"
+					/>
+				</div>
+				<div class="roulette-betting-board">
+					<div class="top-board">
+						<div class="square green zero" id="square-0">0</div>
+						<div class="main-board">
+							<div class="column">
+								<div
+									class="square dozen-1 eighteen-1 red odd row3"
+									id="square-1"
+								>
+									1
+								</div>
+								<div
+									class="square dozen-1 eighteen-1 black even row2"
+									id="square-2"
+								>
+									2
+								</div>
+								<div
+									class="square dozen-1 eighteen-1 red odd row1"
+									id="square-3"
+								>
+									3
+								</div>
+							</div>
+							<div class="column">
+								<div
+									class="square dozen-1 eighteen-1 black even row3"
+									id="square-4"
+								>
+									4
+								</div>
+								<div
+									class="square dozen-1 eighteen-1 red odd row2"
+									id="square-5"
+								>
+									5
+								</div>
+								<div
+									class="square dozen-1 eighteen-1 black even row1"
+									id="square-6"
+								>
+									6
+								</div>
+							</div>
+							<div class="column">
+								<div
+									class="square dozen-1 eighteen-1 red odd row3"
+									id="square-7"
+								>
+									7
+								</div>
+								<div
+									class="square dozen-1 eighteen-1 black even row2"
+									id="square-8"
+								>
+									8
+								</div>
+								<div
+									class="square dozen-1 eighteen-1 red odd row1"
+									9
+									id="square-9"
+								>
+									9
+								</div>
+							</div>
+							<div class="column">
+								<div
+									class="square dozen-1 eighteen-1 black even row3"
+									id="square-10"
+								>
+									10
+								</div>
+								<div
+									class="square dozen-1 eighteen-1 black odd row2"
+									id="square-11"
+								>
+									11
+								</div>
+								<div
+									class="square dozen-1 eighteen-1 red even row1"
+									id="square-12"
+								>
+									12
+								</div>
+							</div>
+							<div class="column">
+								<div
+									class="square dozen-2 eighteen-1 black odd row3"
+									id="square-13"
+								>
+									13
+								</div>
+								<div
+									class="square dozen-2 eighteen-1 red even row2"
+									id="square-14"
+								>
+									14
+								</div>
+								<div
+									class="square dozen-2 eighteen-1 black odd row1"
+									id="square-15"
+								>
+									15
+								</div>
+							</div>
+							<div class="column">
+								<div
+									class="square dozen-2 eighteen-1 red even row3"
+									id="square-16"
+								>
+									16
+								</div>
+								<div
+									class="square dozen-2 eighteen-1 black odd row2"
+									id="square-17"
+								>
+									17
+								</div>
+								<div
+									class="square dozen-2 eighteen-1 red even row1"
+									id="square-18"
+								>
+									18
+								</div>
+							</div>
+							<div class="column">
+								<div
+									class="square dozen-2 eighteen-2 red odd row3"
+									id="square-19"
+								>
+									19
+								</div>
+								<div
+									class="square dozen-2 eighteen-2 black even row2"
+									id="square-20"
+								>
+									20
+								</div>
+								<div
+									class="square dozen-2 eighteen-2 red odd row1"
+									id="square-21"
+								>
+									21
+								</div>
+							</div>
+							<div class="column">
+								<div
+									class="square dozen-2 eighteen-2 black even row3"
+									id="square-22"
+								>
+									22
+								</div>
+								<div
+									class="square dozen-2 eighteen-2 red odd row2"
+									id="square-23"
+								>
+									23
+								</div>
+								<div
+									class="square dozen-2 eighteen-2 black even row1"
+									id="square-24"
+								>
+									24
+								</div>
+							</div>
+							<div class="column">
+								<div
+									class="square dozen-3 eighteen-2 red odd row3"
+									id="square-25"
+								>
+									25
+								</div>
+								<div
+									class="square dozen-3 eighteen-2 black even row2"
+									id="square-26"
+								>
+									26
+								</div>
+								<div
+									class="square dozen-3 eighteen-2 red odd row1"
+									id="square-27"
+								>
+									27
+								</div>
+							</div>
+							<div class="column">
+								<div
+									class="square dozen-3 eighteen-2 black even row3"
+									id="square-28"
+								>
+									28
+								</div>
+								<div
+									class="square dozen-3 eighteen-2 black odd row2"
+									id="square-29"
+								>
+									29
+								</div>
+								<div
+									class="square dozen-3 eighteen-2 red even row1"
+									id="square-30"
+								>
+									30
+								</div>
+							</div>
+							<div class="column">
+								<div
+									class="square dozen-3 eighteen-2 black odd row3"
+									id="square-31"
+								>
+									31
+								</div>
+								<div
+									class="square dozen-3 eighteen-2 red even row2"
+									id="square-32"
+								>
+									32
+								</div>
+								<div
+									class="square dozen-3 eighteen-2 black odd row1"
+									id="square-33"
+								>
+									33
+								</div>
+							</div>
+							<div class="column">
+								<div
+									class="square dozen-3 eighteen-2 red even row3"
+									id="square-34"
+								>
+									34
+								</div>
+								<div
+									class="square dozen-3 eighteen-2 black odd row2"
+									id="square-35"
+								>
+									35
+								</div>
+								<div
+									class="square dozen-3 eighteen-2 red even row1"
+									id="square-36"
+								>
+									36
+								</div>
+							</div>
+						</div>
+						<div class="outside-side-bets">
+							<div
+								class="square row-bet row-bet-1 top-right-rounded"
+								id="square-special-1"
+							>
+								2to1
+							</div>
+							<div
+								class="square row-bet row-bet-2"
+								id="square-special-2"
+							>
+								2to1
+							</div>
+							<div
+								class="square row-bet row-bet-3 bottom-right-rounded"
+								id="square-special-3"
+							>
+								2to1
+							</div>
+						</div>
+					</div>
+					<div class="outside-base-bets">
+						<div class="outside-bet-section">
+							<div
+								class="square square-outside dozen-bet dozen-bet-1"
+								id="square-special-4"
+							>
+								1st 12
+							</div>
+							<div
+								class="square square-outside low-high low-bet bottom-left-rounded"
+								id="square-special-5"
+							>
+								1 to 18
+							</div>
+							<div
+								class="square square-outside even-odd even-bet"
+								id="square-special-6"
+							>
+								EVEN
+							</div>
+						</div>
+						<div class="outside-bet-section">
+							<div
+								class="square square-outside dozen-bet dozen-bet-2"
+								id="square-special-7"
+							>
+								2nd 12
+							</div>
+							<div
+								class="square square-outside red-choice red-black"
+								id="square-special-8"
+							>
+								Red
+							</div>
+							<div
+								class="square square-outside black-choice red-black"
+								id="square-special-9"
+							>
+								Black
+							</div>
+						</div>
+						<div class="outside-bet-section">
+							<div
+								class="square square-outside dozen-bet dozen-bet-3"
+								id="square-special-10"
+							>
+								3rd 12
+							</div>
+							<div
+								class="square square-outside even-odd odd-bet"
+								id="square-special-11"
+							>
+								ODD
+							</div>
+							<div
+								class="square square-outside low-high high-bet bottom-right-rounded"
+								id="square-special-12"
+							>
+								19 to 36
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="betting-container">
+				<div class="bet-lists"></div>
+				<button id="play-round-btn">Spin!</button>
+				<div class="create-bets">
+					<button id="new-bet-btn">New bet</button>
+					<div
+						id="bet-container"
+						class="bet-container"
+						style="display: none"
+					>
+						<button id="cancel-bet-btn">Cancel</button>
+						<p>£50</p>
+						<input
+							type="range"
+							min="50"
+							step="5"
+							max="5000"
+							id="bet-size-input"
+						/>
+						<button id="range-submit-btn">Sumbit</button>
+					</div>
+				</div>
+			</div>
+		</main>
+	</body>
+	<noscript
+		><style>
+			header,
+			main,
+			footer {
+				display: none;
+			}
+		</style>
+		<div class="no-script-message">Please enable js to continue</div>
+	</noscript>
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+		const socket = io({ reconnection: false });
+	</script>
+	<script src="../../js/app.js"></script>
+	<script src="../../js/roulette.js"></script>
 </html>

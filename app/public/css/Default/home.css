@@ -1,0 +1,64 @@
+:root {
+	--footer-height: 5em;
+	--github-link-container-width: 25em;
+	--github-link-container-width-small: 100vw;
+	--github-link-body-background-color: black;
+	--github-link-body-border: 1px grey solid;
+	--github-link-body-border-radius: 10px;
+}
+
+footer {
+	margin-top: var(--main-veritcle-margin);
+	height: var(--footer-height);
+	width: 100vw;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+}
+.github-external-link-container {
+	display: flex;
+	flex-direction: row;
+	width: var(--github-link-container-width);
+	justify-content: space-between;
+}
+.github-external-link-body {
+	background-color: var(--github-link-body-background-color);
+	border: var(--github-link-body-border);
+	border-radius: var(--github-link-body-border-radius);
+}
+.github-external-link {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	opacity: var(--link-opacity);
+	margin: 5px 10px;
+}
+.github-external-link:hover {
+	opacity: var(--link-opacity-hover);
+}
+
+.github-external-link::before {
+	content: "";
+	display: inline-block;
+	background-image: url("../../assets/github-mark-white.svg");
+	background-size: contain;
+	background-repeat: no-repeat;
+	height: 30px;
+	width: 30px;
+	margin-right: 5px;
+}
+
+main {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+}
+
+@media (max-width: 600px) {
+	.github-external-link-container {
+		width: var(--github-link-container-width-small);
+		justify-content: space-around;
+	}
+}

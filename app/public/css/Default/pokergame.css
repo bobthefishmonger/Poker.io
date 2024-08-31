@@ -21,7 +21,20 @@
 .community-cards {
 	background-image: url(../../assets/cardBackRed.png);
 }
+::-webkit-scrollbar {
+	display: none;
+}
 
+.chat-history {
+	/* max-height: 250px; */
+	/* max-width: 250px; */
+	width: 10em;
+	height: 10em;
+	border: 3px solid silver;
+	border-radius: 15px;
+	padding: 15px;
+	overflow: scroll scroll;
+}
 [class*="cards-container"] {
 	display: flex;
 	flex-direction: row;

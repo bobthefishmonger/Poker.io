@@ -10,8 +10,10 @@ const uploadrouter = require("./routers/uploads.js");
 
 const accounts = require("../management/accounts.js");
 const cookies = require("../management/cookies.js");
+const db = require("../management/dbmanager.js");
 
 const RedisClient = require("redisjson-express-session-store");
+
 const crypto = require("crypto");
 const path = require("path");
 require("dotenv").config();
@@ -64,6 +66,19 @@ const awaitchanges = async (req, res, next) => {
 const setsessioninfo = async (req, res, next) => {
 	if (!req.session.AccountInfo) {
 		await accounts.logInAuto(req, res);
+	} else {
+		try {
+			const account = await db.checkSessionInfo(req.session.SessionInfo);
+			if (!account) {
+				req.session.AccountInfo = { LoggedIn: false };
+			} else {
+				if (account.AccountID !== req.session.AccountInfo.AccountID) {
+					req.session.AccountInfo = { LoggedIn: false };
+				}
+			}
+		} catch (e) {
+			console.log("error", e.message);
+		}
 	}
 	if (!req.session.socketids) {
 		req.session.socketids = {
@@ -104,6 +119,9 @@ function expressSetup(express, app) {
 	app.use("/", homerouter);
 	app.use("/games", gamesrouter);
 	app.use("/account", accountrouter);
+	app.get("/robots.txt", (req, res) => {
+		res.sendFile(path.join(__dirname, "..", "..", "app", "robots.txt"));
+	});
 	app.get("*", (req, res) => {
 		res.redirect("/404error");
 	});

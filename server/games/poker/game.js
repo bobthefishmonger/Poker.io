@@ -62,7 +62,7 @@ async function updateWinnings(room, winners) {
 
 async function newgame(room) {
 	return new Promise((resolve, reject) => {
-		room.host.poker_socket.emit("rematch", (playagain) => {
+		function playagain(playagain) {
 			if (playagain) {
 				const newroom = new rooms.Poker_Room(
 					room.maxplayers,
@@ -71,12 +71,16 @@ async function newgame(room) {
 					room.gamesplayed
 				);
 				PokerIO.to(room.roomID).emit("New Room", newroom.roomID);
+				room.newroom = newroom.roomID;
 				//we need to make sure the gamestarts with the offset player and not just blinds
 			} else {
 				PokerIO.to(room.roomID).emit("homebtn");
+				room.homebtn = true;
 			}
 			resolve();
-		});
+		}
+		room.emittedrematch = playagain;
+		room.host.poker_socket.emit("rematch", playagain);
 	});
 }
 
@@ -112,12 +116,8 @@ async function game(room) {
 	room.round = 5;
 	const winners = rounds.winner(room);
 	const winnerinfo = getwinnercards(room, winners);
-	PokerIO.to(room.roomID).emit(
-		"winners",
-		winners,
-		winnerinfo[0],
-		winnerinfo[1]
-	);
+	room.winners = [winners, ...winnerinfo[0]];
+	PokerIO.to(room.roomID).emit("winners", ...room.winners);
 	await updateWinnings(room, winners);
 	room.gamesplayed += 1;
 	await newgame(room);

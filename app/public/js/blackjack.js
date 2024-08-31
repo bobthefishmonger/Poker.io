@@ -6,6 +6,7 @@ socket.on("nextsetup", (callback) => {
 
 window.onload = () => {
 	setCSStheme("blackjack");
+	setHeaderIcons();
 };
 window.addEventListener("beforeunload", () => {
 	socket.disconnect(true);

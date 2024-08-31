@@ -23,7 +23,6 @@ async function kickPlayer(username) {
 		Username: username
 	};
 	let response = await fetch("/games/poker/kickplayer", {
-		method: "POST",
 		headers: {
 			"Content-Type": "application/json"
 		},
@@ -157,10 +156,32 @@ socket.on("nextsetup", (callback) => {
 		alert("game is starting");
 		rungame(poker_socket, players);
 	});
-});
 
+	poker_socket.on("reconnect-setup", (players) => {
+		console.log("running game");
+		rungame(poker_socket, players);
+	});
+
+	// chat
+	poker_socket.on("chatmsg", (player, msg) => {
+		const chatHistory = document.getElementById("chat-history");
+		chatHistory.innerText += `${player}:${msg} \n
+		`;
+		chatHistory.scrollTop = chatHistory.scrollHeight;
+	});
+});
+document.getElementById("chat-clear-btn").addEventListener("click", () => {
+	document.getElementById("chat-history").innerText = null;
+});
 document.getElementById("startgamebtn").addEventListener("click", async () => {
 	await startGame();
+});
+
+document.getElementById("chat-submit-btn").addEventListener("click", () => {
+	const msg = document.getElementById("chat-input").value;
+	if (!msg) return;
+	poker_socket.emit("sendmsg", msg);
+	document.getElementById("chat-input").value = null;
 });
 
 window.addEventListener("beforeunload", () => {
@@ -172,4 +193,5 @@ window.addEventListener("beforeunload", () => {
 
 window.onload = () => {
 	setCSStheme("pokergame");
+	setHeaderIcons();
 };
