@@ -23,6 +23,7 @@ async function kickPlayer(username) {
 		Username: username
 	};
 	let response = await fetch("/games/poker/kickplayer", {
+		method: "POST",
 		headers: {
 			"Content-Type": "application/json"
 		},

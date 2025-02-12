@@ -7,7 +7,7 @@
 			name="description"
 			content="Play poker, blackjack, roulette online for free!"
 		/>
-		<title>Sign Up | Poker.IO</title>
+		<title>Log In | Poker.IO</title>
 		<link rel="icon" href="../../assets/favicon.png" />
 		<link
 			rel="stylesheet"
@@ -16,8 +16,8 @@
 		/>
 		<link
 			rel="stylesheet"
-			id="signupcsslink"
-			href="../../css/Default/signup.css"
+			id="logincsslink"
+			href="../../css/Default/login.css"
 		/>
 	</head>
 	<body>
@@ -65,7 +65,7 @@
 			</nav>
 		</header>
 		<main>
-			<form id="signupform">
+			<form id="loginform">
 				<input
 					type="text"
 					id="username_input"
@@ -82,11 +82,12 @@
 					type="checkbox"
 					id="stayloggedin_input"
 					class="stayloggedin_input"
+					checked
 				/>
 				<button type="submit" class="formsubmitbtn">Submit</button>
 				<p id="errormsg" class="errormsg"></p>
 			</form>
-			<a href="/account/login">Or Log In</a>
+			<a href="/account/signup">Or Sign Up</a>
 		</main>
 	</body>
 	<noscript
@@ -104,5 +105,5 @@
 		const socket = io({ reconnection: false });
 	</script>
 	<script src="../../js/app.js"></script>
-	<script src="../../js/signup.js"></script>
+	<script src="../../js/login.js"></script>
 </html>

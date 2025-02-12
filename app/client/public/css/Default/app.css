@@ -124,6 +124,9 @@ header {
 	height: 3em;
 	width: 3em;
 }
+.nav-bar-toggle-left {
+	border-radius: 1.5em;
+}
 
 main {
 	height: 100%;

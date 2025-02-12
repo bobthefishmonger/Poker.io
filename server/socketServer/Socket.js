@@ -2,6 +2,8 @@ const socketutils = require("./socketutils.js");
 const poker_rooms = require("../games/poker/rooms.js");
 const RedisClient = require("redisjson-express-session-store");
 const PokerGame = require("../games/poker/game.js");
+const RouletteGame = require("../games/roulette/roulette.js");
+const AdminSocket = require("../admin/admin-socket.js");
 
 async function poker_socket_setup(poker_socket, PokerIO) {
 	const sessionID = await socketutils.anysocketconnect(poker_socket, 0);
@@ -53,7 +55,9 @@ function socketsetup(io) {
 	const PokerIO = io.of("/poker");
 	const BlackjackIO = io.of("/blackjack");
 	const RouletteIO = io.of("/roulette");
-	PokerGame.setPokerIO(PokerIO);
+	PokerGame.setPokerIO(io);
+	RouletteGame.setRouletteIO(RouletteIO);
+	AdminSocket.setAdminIO(io);
 	PokerIO.on("connection", (poker_socket) => {
 		poker_socket_setup(poker_socket, PokerIO);
 	});
@@ -64,6 +68,9 @@ function socketsetup(io) {
 
 	RouletteIO.on("connection", (roulette_socket) => {
 		roulette_socket_setup(roulette_socket);
+		roulette_socket.on("spinwheel", (cb) => {
+			cb(1000);
+		});
 	});
 
 	io.on("connection", async (socket) => {

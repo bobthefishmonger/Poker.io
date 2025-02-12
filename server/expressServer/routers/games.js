@@ -6,7 +6,9 @@ const poker_game = require("../../games/poker/game.js");
 const RedisClient = require("redisjson-express-session-store");
 
 function sendhtml(res, file) {
-	res.sendFile(path.join(__dirname, "..", "..", "..", "app", `${file}.html`));
+	res.sendFile(
+		path.join(__dirname, "..", "..", "..", "app", "client", `${file}.html`)
+	);
 }
 
 router.get("/", async (req, res) => {

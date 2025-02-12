@@ -17,18 +17,33 @@ async function accountisactive(uname) {
 
 function check_password(password) {
 	const chars = Array.from(password);
-	if (!password) {
-		throw Error("Password cannot be empty");
-	} else if (password.length < 8) {
-		throw Error("Password must be at least 8 letters");
-	} else if (!chars.some((char) => /[A-Z]/.test(char))) {
-		throw Error("Password must contain at least 1 uppercase character");
-	} else if (!chars.some((char) => /[a-z]/.test(char))) {
-		throw Error("Password must contain at least 1 lowercase character");
-	} else if (!chars.some((char) => !isNaN(char) && char !== " ")) {
-		throw Error("Password must contain at least 1 number");
-	} else if (!chars.some((char) => /[!@#$%^&*(),.?":{}|<>]/.test(char))) {
-		throw Error("Password must contain at least 1 special character");
+	// if (!password) {
+	// 	throw Error("Password cannot be empty");
+	// } else if (password.length < 8) {
+	// 	throw Error("Password must be at least 8 letters");
+	// } else if (!chars.some((char) => /[A-Z]/.test(char))) {
+	// 	throw Error("Password must contain at least 1 uppercase character");
+	// } else if (!chars.some((char) => /[a-z]/.test(char))) {
+	// 	throw Error("Password must contain at least 1 lowercase character");
+	// } else if (!chars.some((char) => !isNaN(char) && char !== " ")) {
+	// 	throw Error("Password must contain at least 1 number");
+	// } else if (!chars.some((char) => /[!@#$%^&*(),.?":{}|<>]/.test(char))) {
+	// 	throw Error("Password must contain at least 1 special character");
+	// }
+	if (
+		!password ||
+		password.length < 8 ||
+		!chars.some((char) => /[A-Z]/.test(char)) ||
+		!chars.some((char) => /[a-z]/.test(char)) ||
+		!chars.some(
+			(char) =>
+				(!isNaN(char) && char !== " ") ||
+				!chars.some((char) => /[!@#$%^&*(),.?":{}|<>]/.test(char))
+		)
+	) {
+		throw Error(
+			"Password must contain: 8+ letters, min 1 upper and lowercase character, number, and special character"
+		);
 	}
 }
 

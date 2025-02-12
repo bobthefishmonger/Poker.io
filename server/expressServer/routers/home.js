@@ -2,7 +2,9 @@ const express = require("express");
 const path = require("path");
 const router = express.Router();
 function sendhtml(res, file) {
-	res.sendFile(path.join(__dirname, "..", "..", "..", "app", `${file}.html`));
+	res.sendFile(
+		path.join(__dirname, "..", "..", "..", "app", "client", `${file}.html`)
+	);
 }
 router.get("/", async (req, res) => {
 	sendhtml(res, "home");

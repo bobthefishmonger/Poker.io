@@ -31,7 +31,9 @@ const upload = multer({
 });
 
 function sendhtml(res, file) {
-	res.sendFile(path.join(__dirname, "..", "..", "..", "app", `${file}.html`));
+	res.sendFile(
+		path.join(__dirname, "..", "..", "..", "app", "client", `${file}.html`)
+	);
 }
 
 router.get("/", (req, res) => {

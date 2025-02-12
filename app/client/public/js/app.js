@@ -1,12 +1,5 @@
 socket.on("Redirect Note", (message) => {
 	alert(message);
-	//Could replace with a much nicer notification system?
-	//function alert(){
-	// const notification = document.getElementByID("notification");
-	//  notification.visibility = visilble;
-	//  notification.innerHTML = `${message}`;
-	//  setTimeOut(notificaiton.visibility = hidden;, 3);
-	// }
 });
 socket.on("refresh", () => {
 	location.reload();
@@ -84,3 +77,24 @@ document.getElementById("toggle-menu-button").addEventListener("click", () => {
 			item.classList.toggle("m_hidden");
 		});
 });
+
+async function friendreq(requests) {
+	for (let i = 0; i < requests.length; i++) {
+		const req = requests[i];
+		const friend = document.getElementById("friendreq");
+		friend.style.visibility = "visible";
+		friend.addEventListener(
+			"click",
+			(e) => {
+				if (e.target.id === "friendreq") return;
+				if (e.target.id === "friendreqaccept") {
+					//todo: POST accept
+				} else {
+					//todo: POST decline
+				}
+				friend.style.visibility = "hidden";
+			},
+			{ once: true }
+		);
+	}
+}

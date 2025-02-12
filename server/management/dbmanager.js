@@ -276,7 +276,28 @@ async function checkSessionInfo(SessionInfo) {
 		db.get(
 			`SELECT AccountID
             FROM tblSession
-            WHERE sessionID = ? AND ExpireryDate = ? AND Stayloggedin = 1`,
+			WHERE sessionID = ? AND ExpireryDate = ? AND Stayloggedin = 1`,
+			[SessionInfo.DBsessionID, SessionInfo.Expirery],
+			(err, row) => {
+				if (err) {
+					console.error(err.message);
+					reject(err.message);
+				} else {
+					resolve(row);
+				}
+				dbclose(db);
+			}
+		);
+	});
+}
+
+async function checkSessionInfoSameSession(SessionInfo) {
+	return new Promise((resolve, reject) => {
+		const db = dbconnection();
+		db.get(
+			`SELECT AccountID
+            FROM tblSession
+			WHERE sessionID = ? AND ExpireryDate = ?`,
 			[SessionInfo.DBsessionID, SessionInfo.Expirery],
 			(err, row) => {
 				if (err) {
@@ -493,8 +514,10 @@ async function delFriendship(AccountID1, AccountID2) {
 		dbclose(db);
 	});
 }
+
 module.exports = {
 	checkSessionInfo,
+	checkSessionInfoSameSession,
 	updateSessionInfo,
 	usernameinuse,
 	createAccount,

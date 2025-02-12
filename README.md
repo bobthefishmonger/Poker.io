@@ -32,6 +32,16 @@ SQL for table creation
     	FOREIGN KEY("AccountID") REFERENCES "tblAccounts"("AccountID"),
     	PRIMARY KEY("PreferenceID")
     );
+
+    CREATE TABLE "tblFriends" (
+    	"FriendsID"	INTEGER,
+    	"AccountID1"	INTEGER,
+    	"AccountID2"	INTEGER,
+    	FOREIGN KEY("AccountID2") REFERENCES "tblAccounts"("AccountID"),
+    	FOREIGN KEY("AccountID1") REFERENCES "tblAccounts"("AccountID"),
+    	PRIMARY KEY("FRIENDSID")
+    );
+
     CREATE TABLE "tblSession" (
     	"PKSessionID"	INTEGER,
     	"SessionID"	INTEGER,
@@ -64,3 +74,5 @@ Database files should be constructed as shown:
     /server/database/accounts.db
 
 with thanks to http://suffe.cool/poker/evaluator.html for the poker evaluator theory
+^ This uses my poker-eval library which is a version of this
+It also uses a custom redisjson express session store library

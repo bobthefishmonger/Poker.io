@@ -8,6 +8,8 @@ const gamesrouter = require("./routers/games.js");
 const accountrouter = require("./routers/accounts.js");
 const uploadrouter = require("./routers/uploads.js");
 
+const adminrouter = require("../admin/admin-router.js");
+
 const accounts = require("../management/accounts.js");
 const cookies = require("../management/cookies.js");
 const db = require("../management/dbmanager.js");
@@ -68,7 +70,12 @@ const setsessioninfo = async (req, res, next) => {
 		await accounts.logInAuto(req, res);
 	} else {
 		try {
-			const account = await db.checkSessionInfo(req.session.SessionInfo);
+			const account = await db.checkSessionInfoSameSession(
+				req.session.SessionInfo
+			);
+			// ? Is this redundant
+			// ! These seems redundant
+			// ? 	Functional without, but is there a security issue? Bugs more likely?
 			if (!account) {
 				req.session.AccountInfo = { LoggedIn: false };
 			} else {
@@ -105,7 +112,17 @@ const setonline = async (req, res, next) => {
 
 function expressSetup(express, app) {
 	app.use(nocache());
-	app.use(express.static(path.join(__dirname, "..", "..", "app", "public")));
+	app.use(
+		express.static(
+			path.join(__dirname, "..", "..", "app", "client", "public")
+		)
+	);
+	app.use(
+		"/admin",
+		express.static(
+			path.join(__dirname, "..", "..", "app", "admin", "public")
+		)
+	);
 	app.use("/uploads", uploadrouter);
 	app.use(changeurl);
 	app.use(changeip);
@@ -118,6 +135,7 @@ function expressSetup(express, app) {
 	app.use(bodyparser.json());
 	app.use("/", homerouter);
 	app.use("/games", gamesrouter);
+	app.use("/admin", adminrouter);
 	app.use("/account", accountrouter);
 	app.get("/robots.txt", (req, res) => {
 		res.sendFile(path.join(__dirname, "..", "..", "app", "robots.txt"));
