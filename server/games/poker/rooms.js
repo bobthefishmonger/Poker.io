@@ -85,7 +85,6 @@ class Poker_Room {
 				activeDisconnectedPlayers.delete(player.sessionID);
 			});
 			activerooms.delete(this.roomID);
-			console.log("deleted");
 		}
 	}
 }

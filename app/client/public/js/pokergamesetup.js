@@ -116,6 +116,7 @@ function setplayertable(players) {
 
 socket.on("nextsetup", (callback) => {
 	poker_socket = io("/poker", { reconnection: false });
+
 	callback();
 	poker_socket.on("connect", async () => {
 		const data = { roomID: window.location.href.slice(0, -1).slice(-6) };
@@ -159,7 +160,6 @@ socket.on("nextsetup", (callback) => {
 	});
 
 	poker_socket.on("reconnect-setup", (players) => {
-		console.log("running game");
 		rungame(poker_socket, players);
 	});
 

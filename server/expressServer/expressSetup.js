@@ -84,7 +84,7 @@ const setsessioninfo = async (req, res, next) => {
 				}
 			}
 		} catch (e) {
-			console.log("error", e.message);
+			console.warn("error", e.message);
 		}
 	}
 	if (!req.session.socketids) {

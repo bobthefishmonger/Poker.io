@@ -447,6 +447,27 @@ function updatePokerEarnings(AccountID, poker) {
 	});
 }
 
+function updateRouletteEarnings(AccountID, roulette) {
+	return new Promise((resolve, reject) => {
+		const db = dbconnection();
+		db.run(
+			`
+            UPDATE tblEarnings
+            SET RouletteEarnings=?
+            WHERE AccountID=?`,
+			[roulette, AccountID],
+			(err) => {
+				if (err) {
+					reject(err.message);
+				} else {
+					resolve("updated");
+				}
+			}
+		);
+	});
+}
+
+//friends
 async function addfriendship(AccountID1, AccountID2) {
 	return new Promise((resolve, reject) => {
 		const db = dbconnection();
@@ -530,6 +551,7 @@ module.exports = {
 	updatePreference,
 	getPublicInfo,
 	updatePokerEarnings,
+	updateRouletteEarnings,
 	addfriendship,
 	getFriendsID,
 	delFriendship

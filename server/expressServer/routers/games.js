@@ -3,7 +3,9 @@ const path = require("path");
 const router = express.Router();
 const poker_rooms = require("../../games/poker/rooms.js");
 const poker_game = require("../../games/poker/game.js");
-const RedisClient = require("redisjson-express-session-store");
+const roulette_game = require("../../games/roulette/roulette.js");
+
+// const RedisClient = require("redisjson-express-session-store");
 
 function sendhtml(res, file) {
 	res.sendFile(
@@ -114,6 +116,11 @@ router.get("/roulette", async (req, res) => {
 		req.session.redirect = req.query.redirect || "/";
 		sendhtml(res, "roulette");
 	}
+});
+
+router.post("/roulette/spin", async (req, res) => {
+	let { bets } = req.body;
+	roulette_game.handlespin(req, res, bets);
 });
 
 module.exports = router;

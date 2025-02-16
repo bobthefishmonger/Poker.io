@@ -6,8 +6,9 @@ main {
 }
 
 #roulette-spinner {
-	transition: transform 2.5s ease-out;
+	transition: transform 2s ease-out;
 	user-select: none;
+	height: 23em;
 }
 
 .roulette {
@@ -80,7 +81,6 @@ main {
 	justify-content: space-around;
 	padding-right: var(--square-offset);
 }
-
 .outside-bet-section {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
@@ -141,17 +141,41 @@ main {
 	transform: translate(-50%, -50%);
 	border-radius: 0.5rem;
 	visibility: hidden;
-
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center;
-
 	transition: opacity 0.3s ease;
 }
-.gridpos:not(.chosen):hover {
+.gridpos:not(.selected):hover {
 	opacity: 0.8;
 }
 
+.top-container {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.bet-info-container {
+	background-color: grey;
+	border-radius: 15px;
+	padding: 10px;
+	align-self: flex-end;
+	margin-right: 5em;
+	box-shadow: 3px 3px powderblue;
+}
+
+.main {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	align-self: flex-end;
+}
+
+.selected,
 .chosen {
 	opacity: 1;
 	background-image: url("../../assets/favicon.png");
@@ -160,6 +184,87 @@ main {
 	border-radius: 0.75rem;
 }
 
+#main-title {
+	justify-self: flex-start;
+	font-size: 6rem;
+	color: white;
+	font-weight: bolder;
+	text-shadow: 1px 1px grey;
+	user-select: none;
+	margin-left: 10px;
+}
+.betting-option-box {
+	display: flex;
+	height: 5em;
+	width: 15em;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	gap: 2em;
+	border-radius: 15px;
+	padding-left: calc(5 * var(--square-offset));
+}
+#bet-input {
+	height: 100%;
+	gap: 2em;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+}
+#bet-display {
+	font-size: 1.5em;
+	width: 3em;
+	text-align: center;
+}
+#bet-input:has(.active-betting) .active-betting-only,
+#bet-input:not(.active-betting) {
+	display: none;
+}
+.betting-option-box:has(.active-betting) .active-betting-only {
+	display: block;
+}
+.bet-options-container {
+	display: flex;
+	width: 100%;
+	flex-direction: row;
+	justify-content: space-evenly;
+	align-items: center;
+}
+.spacer-betting {
+	height: 100%;
+	width: 26em;
+}
+.bet-btn {
+	background-color: grey;
+	border: 1px solid white;
+	border-radius: 15px;
+	color: white;
+	font-weight: bolder;
+	height: 5em;
+	text-align: center;
+	width: 10em;
+	padding: 2em;
+}
+
+#winnings-display {
+	font-size: 3em;
+	text-shadow: 1px 1px grey;
+}
+.quote {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: 5em;
+	font-weight: bolder;
+	z-index: 5000;
+	user-select: none;
+}
+.roulette-spinner-container {
+	position: relative;
+	padding-top: 2em;
+}
 :root {
 	--square-height: 2.5rem;
 	--square-border-size: 2px;
@@ -176,4 +281,8 @@ main {
 			var(--square-border-size)
 	);
 	--betting-width: calc(14 * var(--square-offset));
+	/* top margin param? */
+}
+.winning-bet {
+	border: 2px solid green;
 }

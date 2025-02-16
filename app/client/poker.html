@@ -65,136 +65,145 @@
 			</nav>
 		</header>
 		<main>
-			<form>
-				<select id="visibility">
-					<option value="public">Public</option>
-					<option value="private">Private</option>
-				</select>
-				<select id="nplayers">
-					<option value="2">2</option>
-					<option value="3">3</option>
-					<option value="4">4</option>
-					<option value="5">5</option>
-					<option value="6">6</option>
-					<option value="7">7</option>
-					<option value="8">8</option>
-					<option value="9">9</option>
-					<option value="10">10</option>
-					<option value="11">11</option>
-					<option value="12">12</option>
-				</select>
-				<select id="stacksize">
-					<option value="2500">2500</option>
-					<option value="5000">5000</option>
-					<option value="10000">10000</option>
-				</select>
-				<button id="createroombtn">Create Room!</button>
-			</form>
-			<p id="errormsg"></p>
-			<div>
-				<button id="showroomsbtn">Refresh RoomList</button>
-				<table id="publicrooms"></table>
+			<div class="header-container">
+				<h1 id="header-title">Poker</h1>
 			</div>
-			<div>
-				<p>Or Join a privategame</p>
-				<form onsubmit="joinprivroom(event)">
-					<input id="privroomIDinput" placeholder="roomID:" />
-					<button>Submit</button>
+			<div class="choice-container">
+				<form>
+					<select id="visibility">
+						<option value="public">Public</option>
+						<option value="private">Private</option>
+					</select>
+					<select id="nplayers">
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+					</select>
+					<select id="stacksize">
+						<option value="2500">2500</option>
+						<option value="5000">5000</option>
+						<option value="10000">10000</option>
+					</select>
+					<button id="createroombtn">Create Room!</button>
 				</form>
-			</div>
-			<div class="test">
-				<p>Please Select One Option</p>
-				<div class="create-room-options">
-					<div class="drop-down-container">
-						<button class="drop-down-button down-menu">
-							Visibility
-						</button>
-						<div class="drop-down-options">
-							<div class="drop-down-option"><p>Public</p></div>
-							<div class="drop-down-option"><p>Private</p></div>
-						</div>
-					</div>
-					<div class="drop-down-container">
-						<button class="drop-down-button down-menu">
-							Number of Player
-						</button>
-						<div class="drop-down-options">
-							<div
-								class="drop-down-option"
-								id="n-players-option2"
-							>
-								<p>2</p>
-							</div>
-							<div
-								class="drop-down-option"
-								id="n-players-option3"
-							>
-								<p>3</p>
-							</div>
-							<div
-								class="drop-down-option"
-								id="n-players-option4"
-							>
-								<p>4</p>
-							</div>
-							<div
-								class="drop-down-option"
-								id="n-players-option5"
-							>
-								<p>5</p>
-							</div>
-							<div
-								class="drop-down-option"
-								id="n-players-option6"
-							>
-								<p>6</p>
-							</div>
-							<div
-								class="drop-down-option"
-								id="n-players-option7"
-							>
-								<p>7</p>
-							</div>
-							<div
-								class="drop-down-option"
-								id="n-players-option8"
-							>
-								<p>8</p>
-							</div>
-							<div
-								class="drop-down-option"
-								id="n-players-option9"
-							>
-								<p>9</p>
-							</div>
-							<div
-								class="drop-down-option"
-								id="n-players-option10"
-							>
-								<p>10</p>
-							</div>
-							<div
-								class="drop-down-option"
-								id="n-players-option11"
-							>
-								<p>11</p>
-							</div>
-							<div
-								class="drop-down-option"
-								id="n-players-option12"
-							>
-								<p>12</p>
+				<p id="errormsg"></p>
+				<div>
+					<button id="showroomsbtn">Refresh Room List</button>
+					<table id="publicrooms"></table>
+				</div>
+				<div>
+					<p>Or join a private game</p>
+					<form onsubmit="joinprivroom(event)">
+						<input id="privroomIDinput" placeholder="roomID:" />
+						<button>Submit</button>
+					</form>
+				</div>
+				<div class="test">
+					<p>Please Select One Option</p>
+					<div class="create-room-options">
+						<div class="drop-down-container">
+							<button class="drop-down-button down-menu">
+								Visibility
+							</button>
+							<div class="drop-down-options">
+								<div class="drop-down-option">
+									<p>Public</p>
+								</div>
+								<div class="drop-down-option">
+									<p>Private</p>
+								</div>
 							</div>
 						</div>
-					</div>
-					<div class="drop-down-container">
-						<button class="drop-down-button down-menu">
-							StackSize
-						</button>
-						<div class="drop-down-options">
-							<div class="drop-down-option"><p>2500</p></div>
-							<div class="drop-down-option"><p>5000</p></div>
-							<div class="drop-down-option"><p>10000</p></div>
+						<div class="drop-down-container">
+							<button class="drop-down-button down-menu">
+								Number of Player
+							</button>
+							<div class="drop-down-options">
+								<div
+									class="drop-down-option"
+									id="n-players-option2"
+								>
+									<p>2</p>
+								</div>
+								<div
+									class="drop-down-option"
+									id="n-players-option3"
+								>
+									<p>3</p>
+								</div>
+								<div
+									class="drop-down-option"
+									id="n-players-option4"
+								>
+									<p>4</p>
+								</div>
+								<div
+									class="drop-down-option"
+									id="n-players-option5"
+								>
+									<p>5</p>
+								</div>
+								<div
+									class="drop-down-option"
+									id="n-players-option6"
+								>
+									<p>6</p>
+								</div>
+								<div
+									class="drop-down-option"
+									id="n-players-option7"
+								>
+									<p>7</p>
+								</div>
+								<div
+									class="drop-down-option"
+									id="n-players-option8"
+								>
+									<p>8</p>
+								</div>
+								<div
+									class="drop-down-option"
+									id="n-players-option9"
+								>
+									<p>9</p>
+								</div>
+								<div
+									class="drop-down-option"
+									id="n-players-option10"
+								>
+									<p>10</p>
+								</div>
+								<div
+									class="drop-down-option"
+									id="n-players-option11"
+								>
+									<p>11</p>
+								</div>
+								<div
+									class="drop-down-option"
+									id="n-players-option12"
+								>
+									<p>12</p>
+								</div>
+							</div>
+						</div>
+						<div class="drop-down-container">
+							<button class="drop-down-button down-menu">
+								StackSize
+							</button>
+							<div class="drop-down-options">
+								<div class="drop-down-option"><p>2500</p></div>
+								<div class="drop-down-option"><p>5000</p></div>
+								<div class="drop-down-option"><p>10000</p></div>
+							</div>
 						</div>
 					</div>
 				</div>

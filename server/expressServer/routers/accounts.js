@@ -211,6 +211,7 @@ router.get("/:AccountID", async (req, res) => {
 			"..",
 			"..",
 			"app",
+			"client",
 			"publicaccount.html"
 		);
 		let data = fs.readFileSync(htmlFilePath, "utf8");

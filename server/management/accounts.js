@@ -11,7 +11,7 @@ async function accountisactive(uname) {
 	} catch (e) {
 		console.error(activeaccounts[uname]);
 		console.error("Cant log in");
-		console.log(e);
+		console.warn(e);
 	}
 }
 

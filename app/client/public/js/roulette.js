@@ -1,41 +1,88 @@
 let roulette_socket;
+const spinbtn = document.getElementById("spinbtn");
 const betform = document.getElementById("bet-input");
 const bettogglebtn = document.getElementById("toggle-betting");
+const betsubmitbtn = document.getElementById("submit-btn");
+const betAmountSlider = document.getElementById("bet-amount-input");
 const overlay = document.getElementById("board-overlay");
-
+const betDisplay = document.getElementById("bet-display");
+const stackDisplay = document.getElementById("stack-display");
+const winningsDisplay = document.getElementById("winnings-display");
+const spinner = document.getElementById("roulette-spinner");
+const maxstack = 5000;
+let bets = {};
+let canspin = true;
+let winnings = getDisplayInformation().Earnings.Roulette;
+let stack = maxstack;
 socket.on("nextsetup", (cb) => {
 	roulette_socket = io("/roulette", { reconnection: false });
 	cb();
-	let degrees_spun = 0;
+});
 
-	function spin() {
-		const deg = 1000; //! change this
-		roulette_socket.emit("spinwheel", (deg) => {
-			degrees_spun += deg;
-			document.getElementById(
-				"roulette-spinner"
-			).style.transform = `rotate(${degrees_spun}deg)`;
+async function spin_request() {
+	return new Promise(async (resolve, reject) => {
+		const data = JSON.stringify({ bets: bets });
+		let response = await fetch("/games/roulette/spin", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: data
 		});
+		response = await response.json();
+		if (!response.success) {
+			reject(response.errormessage);
+		} else {
+			resolve(response);
+		}
+	});
+}
+async function spin() {
+	if (!canspin) return;
+	if (!Object.keys(bets)[0]) {
+		alert("Please place a bet");
+		return;
 	}
-
-	const spinbtn = document.getElementById("spinbtn");
-
-	spinbtn.addEventListener("click", spin);
-});
-
-window.addEventListener("beforeunload", () => {
-	socket.disconnect(true);
-	if (roulette_socket) {
-		roulette_socket.disconnect(true);
+	try {
+		canspin = false;
+		const spin_data = await spin_request();
+		spinner.style.transform = `rotate(${spin_data.degree}deg)`;
+		setTimeout(() => {
+			alert(`Landed on ${spin_data.square}`);
+			winnings += spin_data.winnings[1];
+			winningsDisplay.innerText = `Winnings: £${winnings}`;
+			Object.entries(spin_data.winnings[0]).forEach(([type, obj]) => {
+				Object.entries(obj).forEach(([index]) => {
+					const elements = document.querySelectorAll(
+						`.gridpos[type="${type}"][index="${index}"]`
+					);
+					elements.forEach((element) => {
+						element.classList.add("winning-bet");
+					});
+				});
+			});
+			reset();
+		}, 2100);
+	} catch (e) {
+		console.warn(e);
 	}
-});
-
-window.onload = () => {
-	setCSStheme("roulette");
-	setHeaderIcons();
-	setOverlayPoints();
-	setRouletteGroups(); // !redo for the square highlights/ well add a bit more
-};
+}
+function reset() {
+	setTimeout(() => {
+		//! replace with an okay/reset/clear btn
+		spinner.style.transform = ``;
+		document.querySelectorAll(".winning-bet").forEach((e) => {
+			e.classList.remove("winning-bet");
+		});
+		document.querySelectorAll(".chosen").forEach((e) => {
+			e.classList.remove("chosen");
+		});
+		bets = {};
+		stack = maxstack;
+		stackDisplay.innerText = `Stack: £${stack}`;
+		canspin = true;
+	}, 2500);
+}
 
 function setRouletteGroups() {
 	function sethighlighted(listener, outcome) {
@@ -128,32 +175,39 @@ function setOverlayPoints() {
 
 function offbetclick(e) {
 	const square = e.target;
-	square.classList.remove("chosen");
+	square.classList.remove("selected");
 	square.removeEventListener("click", offbetclick);
 	square.addEventListener("click", handlebetclick);
 }
 
 function handlebetclick(e) {
 	const square = e.target;
-	console.log(square.getAttribute("type"));
-	console.log(square.getAttribute("index"));
-	square.classList.add("chosen");
-	console.log(
-		squares[square.getAttribute("type")][
-			Number(square.getAttribute("index"))
-		]
-	);
-
-	square.removeEventListener("click", handlebetclick);
-	square.addEventListener("click", offbetclick);
-	betform.style.visibility = "visible";
-	betform.addEventListener("submit", (e) => {
-		e.preventDefault();
-		endSetBets();
-	});
+	if (square.classList.contains("selected")) {
+		square.classList.remove("selected");
+		square.removeEventListener("click", offbetclick);
+		square.addEventListener("click", handlebetclick);
+	} else {
+		document
+			.getElementsByClassName("selected")[0]
+			?.classList.remove("selected");
+		square.classList.add("selected");
+		square.removeEventListener("click", handlebetclick);
+		square.addEventListener("click", offbetclick);
+		betform.style.visibility = "visible";
+		betform.addEventListener("submit", (e) => {
+			e.preventDefault();
+			endSetBets();
+		});
+	}
 }
 
 function setBets() {
+	if (stack < 50) {
+		alert("You do not have enough in a stack to bet");
+		return;
+	}
+	betform.style.visibility = "visible";
+	betform.classList.add("active-betting");
 	bettogglebtn.innerHTML = "Cancel";
 	overlay.style.pointerEvents = "auto";
 	document.querySelectorAll(".gridpos:not(.chosen)").forEach((pos) => {
@@ -166,7 +220,8 @@ function setBets() {
 
 function endSetBets() {
 	betform.style.visibility = "hidden";
-	bettogglebtn.innerHTML = "PLACE BET";
+	betform.classList.remove("active-betting");
+	bettogglebtn.innerHTML = "BET";
 	overlay.style.pointerEvents = "none";
 	document.querySelectorAll(".gridpos:not(.chosen)").forEach((pos) => {
 		pos.style.visibility = "hidden";
@@ -176,4 +231,52 @@ function endSetBets() {
 	bettogglebtn.addEventListener("click", setBets);
 }
 
+function saveBets(e) {
+	e.preventDefault();
+	try {
+		const bet = document.getElementsByClassName("selected")[0];
+		const betamount = betAmountSlider.value;
+		bet.classList.add("chosen");
+		bet.classList.remove("selected");
+		bets[`${bet.getAttribute("type")}:${bet.getAttribute("index")}`] =
+			betamount;
+		bet.addEventListener("click", () => {
+			alert(`Bet for: £${betamount}`);
+		});
+		stack -= betamount;
+		betAmountSlider.max = stack;
+		stackDisplay.innerText = `Stack: £${stack}`;
+		endSetBets();
+	} catch (e) {
+		console.error(e);
+		console.warn("No bet placed");
+		alert("Please place a bet");
+	}
+}
+
+function betAmountInput(e) {
+	e.preventDefault();
+	betDisplay.innerText = `£${betAmountSlider.value}`;
+}
+betAmountSlider.value = betAmountSlider.min;
+betDisplay.innerText = `£${betAmountSlider.value}`;
+betAmountSlider.addEventListener("input", betAmountInput);
+betsubmitbtn.addEventListener("click", saveBets);
 bettogglebtn.addEventListener("click", setBets);
+spinbtn.addEventListener("click", spin);
+stackDisplay.innerText = `Stack: £${maxstack}`;
+winningsDisplay.innerText = `Winnings: £${winnings}`;
+
+window.addEventListener("beforeunload", () => {
+	socket.disconnect(true);
+	if (roulette_socket) {
+		roulette_socket.disconnect(true);
+	}
+});
+
+window.onload = () => {
+	setCSStheme("roulette");
+	setHeaderIcons();
+	setOverlayPoints();
+	setRouletteGroups();
+};

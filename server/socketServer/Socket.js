@@ -55,9 +55,8 @@ function socketsetup(io) {
 	const PokerIO = io.of("/poker");
 	const BlackjackIO = io.of("/blackjack");
 	const RouletteIO = io.of("/roulette");
-	PokerGame.setPokerIO(io);
+	PokerGame.setPokerIO(PokerIO);
 	RouletteGame.setRouletteIO(RouletteIO);
-	AdminSocket.setAdminIO(io);
 	PokerIO.on("connection", (poker_socket) => {
 		poker_socket_setup(poker_socket, PokerIO);
 	});

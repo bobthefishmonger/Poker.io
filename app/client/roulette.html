@@ -65,21 +65,29 @@
 			</nav>
 		</header>
 		<main>
-			<div class="bet-info-container">
-				<p class="bet-info">Straight up: 35-1</p>
-				<p class="bet-info">Split: 17-1</p>
-				<p class="bet-info">Steet: 11-1</p>
-				<p class="bet-info">Corner: 8-1</p>
-				<p class="bet-info">Line: 5-1</p>
-				<p class="bet-info">Dozen: 2-1</p>
-				<p class="bet-info">Column: 2-1</p>
-				<p class="bet-info">18s: 1-1</p>
-				<p class="bet-info">Red or blue: 1-1</p>
-				<p class="bet-info">Odd or even: 1-1</p>
+			<div class="top-container">
+				<h1 id="main-title">Roulette</h1>
+				<div class="stack-container">
+					<h1 id="winnings-display">Winnings: £-</h1>
+					<h1 id="stack-display">Stack: £-</h1>
+				</div>
+				<div class="bet-info-container">
+					<p class="bet-info">Straight up: 35-1</p>
+					<p class="bet-info">Split: 17-1</p>
+					<p class="bet-info">Steet: 11-1</p>
+					<p class="bet-info">Corner: 8-1</p>
+					<p class="bet-info">Line: 5-1</p>
+					<p class="bet-info">Dozen: 2-1</p>
+					<p class="bet-info">Column: 2-1</p>
+					<p class="bet-info">18s: 1-1</p>
+					<p class="bet-info">Red or blue: 1-1</p>
+					<p class="bet-info">Odd or even: 1-1</p>
+				</div>
 			</div>
 			<div class="stack"></div>
 			<div class="roulette">
 				<div class="roulette-spinner-container">
+					<div class="quote">'</div>
 					<img
 						draggable="false"
 						id="roulette-spinner"
@@ -423,18 +431,33 @@
 					></div>
 				</div>
 			</div>
-			<div class="betting-option-box">
-				<button id="toggle-betting">PLACE BET</button>
-				<form id="bet-input" style="visibility: hidden">
-					<input
-						type="range"
-						placeholder="Bet amount"
-						min="5"
-						step="5"
-					/>
-					<button>Submit</button>
-				</form>
-				<button id="spinbtn">SPIN!</button>
+			<div class="bet-options-container">
+				<div clas="spacer-betting"></div>
+				<div class="betting-option-box">
+					<button id="toggle-betting" class="bet-btn">BET</button>
+					<form
+						id="bet-input"
+						class="active-betting-only"
+						style="visibility: hidden"
+					>
+						<p id="bet-display"></p>
+						<input
+							type="range"
+							placeholder="Bet amount"
+							min="50"
+							max="5000"
+							step="10"
+							id="bet-amount-input"
+						/>
+						<button
+							id="submit-btn"
+							class="active-betting-only bet-btn"
+						>
+							Submit
+						</button>
+					</form>
+					<button id="spinbtn" class="bet-btn">SPIN!</button>
+				</div>
 			</div>
 		</main>
 	</body>
