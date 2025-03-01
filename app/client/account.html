@@ -61,22 +61,38 @@
 			</nav>
 		</header>
 		<main>
-			<div class="activity">
+			<div class="profile-activity">
 				<div class="profile">
-					<p>Profile Name</p>
+					<p id="profile-name">Profile Name</p>
 					<img
 						class="ProfileIcon"
 						alt="Profile Icon"
 						id="profileicon"
 					/>
 				</div>
+				<table id="earnings-table">
+					<thead>
+						<tr>
+							<th>POKER</th>
+							<th>BLACKJACK</th>
+							<th>ROULETTE</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td id="pokerEarnings"></td>
+							<td id="blackjackEarnings"></td>
+							<td id="rouletteEarnings"></td>
+						</tr>
+					</tbody>
+				</table>
 				<div class="options">
-					<select id="themechoices" class="testing">
+					<select id="themechoices">
 						<option>_</option>
 						<option value="Light">Light</option>
 						<option value="Default">Dark</option>
 					</select>
-					<button id="themesubmitbtn" class="testing">Submit</button>
+					<button id="themesubmitbtn">Submit</button>
 					<input
 						id="profilepicinput"
 						type="file"
@@ -85,32 +101,26 @@
 					<button id="iconsubmitbtn">Submit</button>
 					<p id="successmessage"></p>
 				</div>
-				<div class="logout">
-					<form>
-						<button id="logoutbtn">Log Out</button>
-					</form>
-					<p id="errormsg"></p>
+				<div class="log-out-container">
+					<div class="delete-account">
+						<form>
+							<button id="deleteaccountbtn">
+								Delete account
+							</button>
+						</form>
+						<p id="errormsg"></p>
+					</div>
+					<div class="logout">
+						<form>
+							<button id="logoutbtn">Log Out</button>
+						</form>
+						<p id="errormsg"></p>
+					</div>
 				</div>
-				<div class="delete account">
-					<form>
-						<button class="test" id="logoutbtn">
-							Delete account
-						</button>
-					</form>
-					<p id="errormsg"></p>
-				</div>
-				<table>
-					<tr>
-						<th>POKER |</th>
-						<th>BLACKJACK |</th>
-						<th>ROULETTE</th>
-					</tr>
-					<tr>
-						<td id="pokerEarnings">{{pokerEarnings}}</td>
-						<td id="blackjackEarnings">{{blackjackEarnings}}</td>
-						<td id="rouletteEarnings">{{rouletteEarnings}}</td>
-					</tr>
-				</table>
+			</div>
+			<div class="friend-activity">
+				<h1 id="friends-title">Friends</h1>
+				<p>You have no friends</p>
 			</div>
 		</main>
 	</body>

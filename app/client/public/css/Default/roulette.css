@@ -182,14 +182,14 @@ main {
 	height: 1.5rem;
 	width: 1.5rem;
 	border-radius: 0.75rem;
+	pointer-events: all;
 }
 
 #main-title {
 	justify-self: flex-start;
 	font-size: 6rem;
 	color: white;
-	font-weight: bolder;
-	text-shadow: 1px 1px grey;
+	font-weight: bold;
 	user-select: none;
 	margin-left: 10px;
 }
@@ -240,7 +240,7 @@ main {
 	border: 1px solid white;
 	border-radius: 15px;
 	color: white;
-	font-weight: bolder;
+	font-weight: bold;
 	height: 5em;
 	text-align: center;
 	width: 10em;
@@ -249,15 +249,14 @@ main {
 
 #winnings-display {
 	font-size: 3em;
-	text-shadow: 1px 1px grey;
 }
 .quote {
 	position: absolute;
 	top: 0;
 	left: 50%;
 	transform: translateX(-50%);
-	font-size: 5em;
-	font-weight: bolder;
+	font-size: 2em;
+	font-weight: bold;
 	z-index: 5000;
 	user-select: none;
 }

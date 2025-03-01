@@ -1,7 +1,6 @@
 const RedisClient = require("redisjson-express-session-store");
 const lookup = require("./indexlookup.js");
 const { updateRouletteEarnings } = require("../../management/dbmanager.js");
-let RouletteIO;
 
 const maxbet = 5000; // ! Do we want this to change
 const minbet = 50;

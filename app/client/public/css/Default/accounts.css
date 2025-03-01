@@ -3,3 +3,67 @@
 	height: 150px;
 	border-radius: 75px;
 }
+main {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-evenly;
+}
+.profile-activity {
+	height: 90%;
+	width: 40em;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-around;
+	background-color: rgba(40, 40, 40, 0.2);
+	border-radius: 2em;
+}
+.friend-activity {
+	height: 90%;
+	width: 15em;
+	background-color: rgba(40, 40, 40, 0.2);
+	border-radius: 2em;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10em;
+}
+#friends-title {
+	margin-top: 1em;
+}
+.profile {
+	display: flex;
+	flex-direction: row-reverse;
+	align-items: center;
+	gap: 2em;
+}
+.log-out-container {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-evenly;
+	height: 5em;
+	width: 25em;
+}
+
+#profile-name {
+	text-align: center;
+	font-size: 3em;
+	font-weight: bold;
+}
+
+#earnings-table {
+	display: block;
+	padding: 10px;
+	border-radius: 15px;
+	background-color: rgba(40, 40, 40, 0.5);
+	text-align: center;
+	font-weight: bold;
+	font-size: 1.5em;
+}
+
+#earnings-table th {
+	font-size: 1.25em;
+	padding: 10px;
+}

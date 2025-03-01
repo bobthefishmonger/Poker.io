@@ -75,11 +75,13 @@ function reset() {
 			e.classList.remove("winning-bet");
 		});
 		document.querySelectorAll(".chosen").forEach((e) => {
+			e.style.visibility = "hidden";
 			e.classList.remove("chosen");
 		});
 		bets = {};
 		stack = maxstack;
 		stackDisplay.innerText = `Stack: £${stack}`;
+		betAmountSlider.max = stack;
 		canspin = true;
 	}, 2500);
 }
@@ -227,6 +229,9 @@ function endSetBets() {
 		pos.style.visibility = "hidden";
 		pos.removeEventListener("click", handlebetclick);
 	});
+	document.querySelectorAll(".selected").forEach((e) => {
+		e.classList.remove("selected");
+	});
 	bettogglebtn.removeEventListener("click", endSetBets);
 	bettogglebtn.addEventListener("click", setBets);
 }
@@ -240,9 +245,6 @@ function saveBets(e) {
 		bet.classList.remove("selected");
 		bets[`${bet.getAttribute("type")}:${bet.getAttribute("index")}`] =
 			betamount;
-		bet.addEventListener("click", () => {
-			alert(`Bet for: £${betamount}`);
-		});
 		stack -= betamount;
 		betAmountSlider.max = stack;
 		stackDisplay.innerText = `Stack: £${stack}`;

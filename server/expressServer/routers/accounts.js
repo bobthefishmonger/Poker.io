@@ -7,7 +7,7 @@ const cookies = require("../../management/cookies.js");
 const db = require("../../management/dbmanager.js");
 const fs = require("fs");
 const RedisClient = require("redisjson-express-session-store");
-
+const crypto = require("crypto");
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
 		cb(null, path.join(__dirname, "..", "..", "database", "uploads"));
@@ -237,6 +237,47 @@ router.get("/:AccountID", async (req, res) => {
 			res.redirect("back");
 		}
 	}
+});
+
+router.post("/deleteaccount", (req, res) => {
+	if (!req.session.AccountInfo.LoggedIn) {
+		req.session.redirectNote = "Not logged in";
+		res.redirect("/account/login");
+	} else if (req.session.ingame) {
+		res.send({
+			success: false,
+			message: "You cannot delete an account whilst playing a game"
+		});
+	} else {
+		const key = crypto.randomUUID();
+		req.session.deletekey = key;
+		req.session.candelete = false;
+		res.send({
+			success: true,
+			redirect: `/account/deleteaccount/verify/${key}/`
+		});
+	}
+});
+
+router.get("/deleteaccount/verify/:key", async (req, res) => {
+	if (
+		!req.params.key ||
+		!req.session.deletekey ||
+		req.params.key !== req.session.deletekey ||
+		req.session.candelete
+	) {
+		res.redirect("/account");
+	} else {
+		await RedisClient.setSession(req.sessionID, "candelete", true);
+		req.session.reload(() => {
+			sendhtml(res, "deleteverify");
+		});
+	}
+});
+
+router.post("/deleteaccount/verify/submit", async (req, res) => {
+	const { username, password, key } = req.body;
+	await accounts.deleteAccount(req, res, username, password, key);
 });
 
 module.exports = router;

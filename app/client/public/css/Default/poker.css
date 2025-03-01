@@ -60,8 +60,7 @@ main {
 #header-title {
 	font-size: 6rem;
 	color: white;
-	font-weight: bolder;
-	text-shadow: 1px 1px grey;
+	font-weight: bold;
 	user-select: none;
 	margin-left: 10px;
 }

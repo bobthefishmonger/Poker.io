@@ -99,6 +99,7 @@ function createDisplayInformationCookie(req, res) {
 	let DisplayInformation;
 	try {
 		DisplayInformation = {
+			name: req.session.AccountInfo.Username,
 			theme: req.session.AccountInfo.Visuals.Theme,
 			profileIcon: req.session.AccountInfo.Visuals.AccountImage,
 			Earnings: req.session.AccountInfo.Earnings

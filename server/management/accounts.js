@@ -200,8 +200,33 @@ async function logInAuto(req, res) {
 	}
 }
 
+async function deleteAccount(req, res, username, password, key) {
+	if (!req.session.candelete || key !== req.session.deletekey) {
+		res.session.deletekey = null;
+		res.json({ success: false, message: "Invalid Request" });
+		return;
+	}
+	let AccountID;
+	try {
+		AccountID = await db.validateUsername(username, password);
+	} catch {
+		res.json({ success: false, message: "Invalid Details" });
+		return;
+	}
+	try {
+		await db.delAccount(AccountID);
+	} catch {
+		res.json({ success: false, message: "An Internal Error Occured" });
+		return;
+	}
+	req.session.AccountInfo = { LoggedIn: false };
+	delete activeaccounts[username];
+	res.json({ success: true });
+}
+
 module.exports = {
 	signUpUser,
 	logInUser,
-	logInAuto
+	logInAuto,
+	deleteAccount
 };

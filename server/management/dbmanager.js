@@ -536,6 +536,56 @@ async function delFriendship(AccountID1, AccountID2) {
 	});
 }
 
+async function delRow(db, table, AccountID) {
+	return new Promise((resolve, reject) => {
+		db.run(
+			`DELETE FROM ${table} WHERE AccountID = ?`,
+			[AccountID],
+			function (err) {
+				if (err) {
+					reject(err.message);
+				} else {
+					resolve();
+				}
+			}
+		);
+	});
+}
+async function delAccount(AccountID) {
+	const db = dbconnection();
+	try {
+		await new Promise((resolve, reject) => {
+			db.run("BEGIN TRANSACTION", (err) => {
+				if (err) reject(err);
+				else resolve();
+			});
+		});
+		await delRow(db, "tblEarnings", AccountID);
+		await delRow(db, "tblPreferences", AccountID);
+		await delRow(db, "tblSession", AccountID);
+		await delRow(db, "tblUsedIPs", AccountID);
+		await delRow(db, "tblAccounts", AccountID);
+		// !Need to delete friendships when implimeneted
+		// !Delete profile images from db
+		await new Promise((resolve, reject) => {
+			db.run("COMMIT", (err) => {
+				if (err) reject(err);
+				else resolve();
+			});
+		});
+		dbclose(db);
+		return;
+	} catch (error) {
+		await new Promise((resolve, reject) => {
+			db.run("ROLLBACK", (err) => {
+				if (err) reject(err);
+				else resolve();
+			});
+		});
+		dbclose(db);
+		throw error;
+	}
+}
 module.exports = {
 	checkSessionInfo,
 	checkSessionInfoSameSession,
@@ -554,5 +604,6 @@ module.exports = {
 	updateRouletteEarnings,
 	addfriendship,
 	getFriendsID,
-	delFriendship
+	delFriendship,
+	delAccount
 };

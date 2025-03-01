@@ -68,24 +68,6 @@ const awaitchanges = async (req, res, next) => {
 const setsessioninfo = async (req, res, next) => {
 	if (!req.session.AccountInfo) {
 		await accounts.logInAuto(req, res);
-	} else {
-		try {
-			const account = await db.checkSessionInfoSameSession(
-				req.session.SessionInfo
-			);
-			// ? Is this redundant
-			// ! These seems redundant
-			// ? 	Functional without, but is there a security issue? Bugs more likely?
-			if (!account) {
-				req.session.AccountInfo = { LoggedIn: false };
-			} else {
-				if (account.AccountID !== req.session.AccountInfo.AccountID) {
-					req.session.AccountInfo = { LoggedIn: false };
-				}
-			}
-		} catch (e) {
-			console.warn("error", e.message);
-		}
 	}
 	if (!req.session.socketids) {
 		req.session.socketids = {
