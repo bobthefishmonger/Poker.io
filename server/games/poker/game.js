@@ -89,7 +89,7 @@ function getwinnercards(room, winners) {
 	const indexs = [];
 	winners.forEach((winner) => {
 		indexs.push(room.usernames.indexOf(winner) + 1);
-		cards.push(room.players.get(winner).cards);
+		cards.push(room.players.get(winner).cards.slice(0, 2));
 	});
 	return [indexs, cards];
 }
@@ -116,8 +116,12 @@ async function game(room) {
 	room.round = 5;
 	const winners = rounds.winner(room);
 	const winnerinfo = getwinnercards(room, winners);
-	room.winners = [winners, ...winnerinfo[0]];
-	PokerIO.to(room.roomID).emit("winners", ...room.winners);
+	PokerIO.to(room.roomID).emit(
+		"winners",
+		winners,
+		winnerinfo[0],
+		winnerinfo[1]
+	);
 	await updateWinnings(room, winners);
 	room.gamesplayed += 1;
 	await newgame(room);

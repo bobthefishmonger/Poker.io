@@ -285,3 +285,32 @@ main {
 .winning-bet {
 	border: 2px solid green;
 }
+#roulette-reset-overlay {
+	/* display: none; */
+	height: 100%;
+	width: 100%;
+	background-color: rgb(50, 50, 50);
+	border-radius: 25px;
+	padding: 1em;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 1;
+	opacity: 0;
+	transition: opacity 1s ease;
+}
+#roulette-reset-overlay.show-overlay {
+	opacity: 0.6;
+}
+#resetbtn {
+	position: absolute;
+	top: 2em;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 3;
+	display: block;
+	height: 2em;
+	width: 5em;
+	font-size: 1.5em;
+}

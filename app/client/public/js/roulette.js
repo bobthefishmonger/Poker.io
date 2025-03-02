@@ -10,6 +10,8 @@ const stackDisplay = document.getElementById("stack-display");
 const winningsDisplay = document.getElementById("winnings-display");
 const spinner = document.getElementById("roulette-spinner");
 const maxstack = 5000;
+const resetOverlay = document.getElementById("roulette-reset-overlay");
+const resetbutton = document.getElementById("resetbtn");
 let bets = {};
 let canspin = true;
 let winnings = getDisplayInformation().Earnings.Roulette;
@@ -48,7 +50,7 @@ async function spin() {
 		const spin_data = await spin_request();
 		spinner.style.transform = `rotate(${spin_data.degree}deg)`;
 		setTimeout(() => {
-			alert(`Landed on ${spin_data.square}`);
+			// alert(`Landed on ${spin_data.square}`);
 			winnings += spin_data.winnings[1];
 			winningsDisplay.innerText = `Winnings: £${winnings}`;
 			Object.entries(spin_data.winnings[0]).forEach(([type, obj]) => {
@@ -61,29 +63,31 @@ async function spin() {
 					});
 				});
 			});
-			reset();
+			resetOverlay.classList.add("show-overlay");
+			resetbutton.addEventListener("click", reset);
 		}, 2100);
 	} catch (e) {
 		console.warn(e);
 	}
 }
 function reset() {
+	spinner.style.transform = ``;
+	document.querySelectorAll(".winning-bet").forEach((e) => {
+		e.classList.remove("winning-bet");
+	});
+	document.querySelectorAll(".chosen").forEach((e) => {
+		e.style.visibility = "hidden";
+		e.classList.remove("chosen");
+	});
+	bets = {};
+	stack = maxstack;
+	stackDisplay.innerText = `Stack: £${stack}`;
+	betAmountSlider.max = stack;
+	canspin = true;
+	resetOverlay.classList.add("show-overlay");
 	setTimeout(() => {
-		//! replace with an okay/reset/clear btn
-		spinner.style.transform = ``;
-		document.querySelectorAll(".winning-bet").forEach((e) => {
-			e.classList.remove("winning-bet");
-		});
-		document.querySelectorAll(".chosen").forEach((e) => {
-			e.style.visibility = "hidden";
-			e.classList.remove("chosen");
-		});
-		bets = {};
-		stack = maxstack;
-		stackDisplay.innerText = `Stack: £${stack}`;
-		betAmountSlider.max = stack;
-		canspin = true;
-	}, 2500);
+		resetbutton.removeEventListener("click", reset);
+	}, 1000);
 }
 
 function setRouletteGroups() {
@@ -268,6 +272,7 @@ bettogglebtn.addEventListener("click", setBets);
 spinbtn.addEventListener("click", spin);
 stackDisplay.innerText = `Stack: £${maxstack}`;
 winningsDisplay.innerText = `Winnings: £${winnings}`;
+resetbutton.addEventListener("click", reset);
 
 window.addEventListener("beforeunload", () => {
 	socket.disconnect(true);
